@@ -1,0 +1,293 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript">
+        /*===========================================================================================================================*/
+
+        //Global Variable Begin
+        var loadingInterval;
+        var canvas;
+        var ctx;
+        var currentRoom;
+        var tools
+
+        var sourceCount = 0;
+        var totalSourceCount = 2;
+
+
+        var stage = {
+            margin: 10,
+        }
+
+        var toolBar = {
+            width: 50,
+            margin: 5,
+        }
+
+        var toolIcon = {
+            width: toolBar.width - 2 * toolBar.margin,
+            height: toolBar.width - 2 * toolBar.margin,
+        }
+
+        var equipmentType = {
+            chair: "Chair",
+            desk: "Desk"
+        }
+
+        //Global Variable End
+
+        /*===========================================================================================================================*/
+        
+        //Main Begin
+
+        $(function () {
+            canvas = document.getElementById("roomCanvas");
+            ctx = canvas.getContext("2d");
+
+            canvas.addEventListener("mousedown", mouseDown, false);
+            //canvas.addEventListener("mousemove", stretchwall, false);
+            //canvas.addEventListener("mouseup", finish, false);
+
+            showLoading();
+            loadingInterval = window.setInterval(load, 100);
+        });
+
+        //Main End
+
+        /*===========================================================================================================================*/
+
+        //Event Begin
+
+        function load() {
+            refreshLoadPercent();
+            if (sourceCount < totalSourceCount) {
+                return;
+            }
+            else {
+                window.clearInterval(loadingInterval);
+                window.setTimeout(hideLoading,1000);
+                generateRoom();
+            }
+        }
+
+        function generateRoom() {        
+
+            var width = $("#txtRoomWidth").val();
+            var height = $("#txtRoomHeight").val();
+
+            if (width.trim() != "") {
+                width = new Number(width);
+            }
+            else {
+                width = 0;
+            }
+            if (height.trim() != "") {
+                height = new Number(height);
+            }
+            else {
+                height = 0;
+            }
+
+            var roomX = stage.margin + toolBar.width;
+            var roomY = stage.margin;
+
+            var roomWidth = width;
+            var roomHeight = height;
+
+            var canvasWidth = stage.margin * 2 + width + toolBar.width;
+            var canvasHeight = stage.margin * 2 + height;
+
+            $(canvas).attr("width", canvasWidth);
+            $(canvas).attr("height", canvasHeight);
+
+            currentRoom = new Room(roomX, roomY, roomWidth, roomHeight);
+
+            currentRoom.draw();
+
+            generateToolBar();
+            return false;
+        }
+
+        function generateToolBar() {
+            tools = new Array();
+
+            var chairTool = new Chair(0, 0, toolIcon.width, toolIcon.height, $("#imgChair")[0]);
+            var deskTool = new Desk(0, 0, toolIcon.width, toolIcon.height, $("#imgDesk")[0]);
+
+            tools.push(chairTool);
+            tools.push(deskTool);
+
+            var toolX = toolBar.margin;
+            var toolY = stage.margin + toolBar.margin;
+
+
+            for (var i = 0; i < tools.length; i++) {
+                tools[i].move(toolX, toolY);
+                tools[i].draw();
+                toolY += toolIcon.height + toolBar.margin;
+            }
+
+        }
+
+        function mouseDown(ev)
+        {
+            var mousePosition = new MousePosition(ev);
+            //alert(mousePosition.x+"_"+mousePosition.y);
+        }
+       
+        //Event End
+
+        /*===========================================================================================================================*/
+
+        //Equipment Begin
+        
+        function Equipment(x,y,type, width, height, img) {
+            this.x = x;
+            this.y = y;
+            this.type = type;
+            this.width = width;
+            this.height = height;
+            this.img = img;
+            this.draw = drawEquipment;
+            this.move = moveEquipment;
+        }
+
+        function drawEquipment() {
+            ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+        }
+
+        function moveEquipment(x,y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        function Chair(x,y,width, height, img) {
+            Equipment.apply(this, new Array(x,y,equipmentType.chair,width,height,img));
+        }
+
+        function Desk(x, y, width, height, img) {
+            Equipment.apply(this, new Array(x, y, equipmentType.desk, width, height, img));
+        }
+
+        //Equipment End
+
+        /*===========================================================================================================================*/
+
+        //Room Begin
+
+        function Room(x,y,width, height) {
+            this.x=x;
+            this.y=y;
+            this.width = width;
+            this.height = height;
+            this.equipments = new Array();
+            this.draw = drawRoom;
+            this.addEquipment = addEquipment;
+        }
+
+        function drawRoom() {
+            ctx.strokeStyle = "black";
+            ctx.strokeRect(this.x, this.y, this.width, this.height);
+        }
+
+        function addEquipment(equipment)
+        {
+            this.equipments.push(equipment);
+        }
+
+        //Room End
+
+        /*===========================================================================================================================*/
+
+        //Common Begin
+
+        function showLoading()
+        {
+            var screenHeight = document.body.offsetHeight;
+            var screenWidth = document.body.offsetWidth;
+
+            $("#divLoading").css("height", screenHeight);
+            $("#divLoading").show();
+
+        }
+
+        function hideLoading() {
+            $("#divLoading").hide();
+        }
+
+        function refreshLoadPercent()
+        {
+            $("#divLoading").text("loading..."+ sourceCount/totalSourceCount*100 + "%");
+        }
+
+        //Common End
+
+        /*===========================================================================================================================*/
+
+        //MousePosition Begin
+        function MousePosition(ev)
+        {
+            var mx;
+            var my;
+
+            if (ev.layerX || ev.layerX == 0)
+            {
+                mx = ev.layerX;
+                my = ev.layerY;
+            }
+            else if(ev.offsetX||ev.offsetX==0){
+                mx = ev.offsetX;
+                my = ev.offsetY;
+            }
+
+            this.x = mx;
+            this.y = my;
+        }
+        //MousePosition End
+
+        /*===========================================================================================================================*/
+
+       
+    </script>
+</head>
+<body>
+    <form>
+        <div id="divLoading" style="position:absolute; width:100%; z-index:999;display:none;background-color:beige">
+            loading...0%
+        </div>
+
+        <div>
+            长：<input id="txtRoomWidth" type="text" value="500" />
+            宽：<input id="txtRoomHeight" type="text" value="500" />
+            <input type="button" id="btnEnter" value="确定" onclick="return generateRoom()" />
+        </div>
+
+        <div>
+            <canvas id="roomCanvas" style="border:1px solid black" width="500" height="500"></canvas>
+        </div>
+
+        <div id="divImg">
+            <img id="imgChair" src="~/Source/Chair.png" width="0" height="0" />
+            <img id="imgDesk" src="~/Source/Desk.png" width="0" height="0" />
+            <script>
+                $("img").each(function () {
+                    this.onload = function () {
+                        sourceCount++;
+                    }
+                })
+            </script>
+        </div>
+
+    </form>
+   
+    
+</body>
+</html>
