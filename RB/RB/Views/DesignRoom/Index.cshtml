@@ -13,6 +13,7 @@
         /*===========================================================================================================================*/
 
         //Global Variable Begin
+        var everything=new Array();
         var loadingInterval;
         var canvas;
         var ctx;
@@ -22,9 +23,14 @@
         var sourceCount = 0;
         var totalSourceCount = 2;
 
+        //鼠标按下选中的对象
+        var mouseDownObj;
+
 
         var stage = {
             margin: 10,
+            width: 500,
+            height:500,
         }
 
         var toolBar = {
@@ -37,9 +43,14 @@
             height: toolBar.width - 2 * toolBar.margin,
         }
 
-        var equipmentType = {
-            chair: "Chair",
-            desk: "Desk"
+        var equipmentTypes = {
+            chair: Chair.name,
+            desk: Desk.name
+        }
+
+        var types = {
+            equipment: Equipment.name,
+            room:Room.name
         }
 
         //Global Variable End
@@ -53,8 +64,8 @@
             ctx = canvas.getContext("2d");
 
             canvas.addEventListener("mousedown", mouseDown, false);
-            //canvas.addEventListener("mousemove", stretchwall, false);
-            //canvas.addEventListener("mouseup", finish, false);
+            canvas.addEventListener("mousemove", mouseMove, false);
+            canvas.addEventListener("mouseup", mouseUp, false);
 
             showLoading();
             loadingInterval = window.setInterval(load, 100);
@@ -75,10 +86,13 @@
                 window.clearInterval(loadingInterval);
                 window.setTimeout(hideLoading,1000);
                 generateRoom();
+                drawEverything();
             }
         }
 
-        function generateRoom() {        
+        function generateRoom() {
+            //重新生成要清空everything
+            everything = new Array();
 
             var width = $("#txtRoomWidth").val();
             var height = $("#txtRoomHeight").val();
@@ -105,12 +119,17 @@
             var canvasWidth = stage.margin * 2 + width + toolBar.width;
             var canvasHeight = stage.margin * 2 + height;
 
+            stage.width = canvasWidth;
+            stage.height = canvasHeight;
+
             $(canvas).attr("width", canvasWidth);
             $(canvas).attr("height", canvasHeight);
 
             currentRoom = new Room(roomX, roomY, roomWidth, roomHeight);
 
-            currentRoom.draw();
+            everything.push(currentRoom);
+
+            //currentRoom.draw();
 
             generateToolBar();
             return false;
@@ -131,7 +150,8 @@
 
             for (var i = 0; i < tools.length; i++) {
                 tools[i].move(toolX, toolY);
-                tools[i].draw();
+                everything.push(tools[i]);
+                //tools[i].draw();
                 toolY += toolIcon.height + toolBar.margin;
             }
 
@@ -140,21 +160,151 @@
         function mouseDown(ev)
         {
             var mousePosition = new MousePosition(ev);
+
+            if (mousePosition.x < toolBar.width)
+            {//鼠标在toolBar内
+                for (var i = 0; i < tools.length;i++)
+                {
+                    var tool = tools[i];
+                    if (tool.isCoverPoint(mousePosition.x, mousePosition.y))
+                    {//鼠标在toolIcon内
+                        switch (tool.equipmentType)
+                        {
+                            case equipmentTypes.chair:
+                                mouseDownObj = new Chair(0, 0, toolIcon.width, toolIcon.height, $("#imgChair")[0]);
+                                break;
+                            case equipmentTypes.desk:
+                                mouseDownObj = new Desk(0, 0, toolIcon.width, toolIcon.height, $("#imgDesk")[0]);
+                                break;
+                        }
+                    }
+                }
+                
+            }
+
             //alert(mousePosition.x+"_"+mousePosition.y);
+        }
+
+        function mouseMove(ev) {
+            var mousePosition = new MousePosition(ev);
+
+            if (mouseDownObj != null)
+            {
+                if (mouseDownObj.type == types.equipment)
+                {
+                    mouseDownObj.move(mousePosition.x, mousePosition.y);
+                }
+            }
+
+            drawEverything();
+            //alert(mousePosition.x+"_"+mousePosition.y);
+        }
+
+        function mouseUp(ev)
+        {
+            var mousePosition = new MousePosition(ev);
+
+            if (mouseDownObj != null) {
+               
+                if (mouseDownObj.isInObj(currentRoom)
+                    ) {//当前鼠标选中对象在对象内
+                    var newObj = mouseDownObj;
+                    everything.push(newObj);
+                    mouseDownObj = null;
+                }
+                else {
+                    mouseDownObj = null;
+                }
+               
+            }
+
+            drawEverything();
+        }
+
+        function drawEverything()
+        {
+            ctx.clearRect(0, 0, stage.width, stage.height);
+
+            for (var i = 0; i < everything.length; i++)
+            {
+                everything[i].draw();
+            }
+
+            if (mouseDownObj != null)
+            {
+                mouseDownObj.draw();
+            }
         }
        
         //Event End
 
         /*===========================================================================================================================*/
 
-        //Equipment Begin
-        
-        function Equipment(x,y,type, width, height, img) {
+        //Base Begin
+        function Position(x, y)
+        {
             this.x = x;
             this.y = y;
-            this.type = type;
+        }
+
+        function Size(width, height)
+        {
             this.width = width;
             this.height = height;
+        }
+
+        function BaseObject(x, y, width, height,type)
+        {
+            this.x=x;
+            this.y=y;
+            this.width = width;
+            this.height = height;
+            this.type = type;
+
+            this.isCoverPoint = isCoverPoint;
+            this.isInObj = isInObj;
+        }
+
+      
+
+
+        function isCoverPoint(pointX, pointY)
+        {
+            if (pointX > this.x && pointX < this.x + this.width
+                && pointY > this.y && pointY < this.y + this.height) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+
+        function isInObj(obj)
+        {
+            if (obj.isCoverPoint(this.x, this.y)//左上角
+                && obj.isCoverPoint(this.x + this.width, this.y)//右上角
+                && obj.isCoverPoint(this.x, this.y + this.height)//左下角
+                && obj.isCoverPoint(this.x + this.width, this.y + this.height)//右下角
+                  )
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        //Base End
+
+        /*===========================================================================================================================*/
+
+        //Equipment Begin
+        
+        function Equipment(x, y, width, height, img, equipmentType) {
+
+            BaseObject.apply(this, new Array(x, y, width, height, Equipment.name));
+            this.equipmentType = equipmentType;
             this.img = img;
             this.draw = drawEquipment;
             this.move = moveEquipment;
@@ -164,17 +314,17 @@
             ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
         }
 
-        function moveEquipment(x,y) {
+        function moveEquipment(x, y) {
             this.x = x;
             this.y = y;
         }
 
         function Chair(x,y,width, height, img) {
-            Equipment.apply(this, new Array(x,y,equipmentType.chair,width,height,img));
+            Equipment.apply(this, new Array(x, y, width, height, img, Chair.name));
         }
 
         function Desk(x, y, width, height, img) {
-            Equipment.apply(this, new Array(x, y, equipmentType.desk, width, height, img));
+            Equipment.apply(this, new Array(x, y, width, height, img, Desk.name));
         }
 
         //Equipment End
@@ -183,11 +333,8 @@
 
         //Room Begin
 
-        function Room(x,y,width, height) {
-            this.x=x;
-            this.y=y;
-            this.width = width;
-            this.height = height;
+        function Room(x, y, width, height) {
+            BaseObject.apply(this, new Array(x, y, width, height, Room.name));
             this.equipments = new Array();
             this.draw = drawRoom;
             this.addEquipment = addEquipment;
@@ -233,6 +380,7 @@
         /*===========================================================================================================================*/
 
         //MousePosition Begin
+
         function MousePosition(ev)
         {
             var mx;
@@ -251,6 +399,7 @@
             this.x = mx;
             this.y = my;
         }
+
         //MousePosition End
 
         /*===========================================================================================================================*/
