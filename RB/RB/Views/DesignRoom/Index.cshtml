@@ -51,7 +51,7 @@
         var types = {
             equipment: Equipment.name,
             room:Room.name
-        }
+        } 
 
         //Global Variable End
 
@@ -124,8 +124,11 @@
 
             $(canvas).attr("width", canvasWidth);
             $(canvas).attr("height", canvasHeight);
+             
+            var roomPosition = new Position(roomX, roomY);
+            var roomSize = new Size(roomWidth, roomHeight);
 
-            currentRoom = new Room(roomX, roomY, roomWidth, roomHeight);
+            currentRoom = new Room(roomPosition, roomSize);
 
             everything.push(currentRoom);
 
@@ -137,9 +140,14 @@
 
         function generateToolBar() {
             tools = new Array();
+            
+            var chairToolPosition = new Position(0, 0);
+            var chairToolSize = new Size(toolIcon.width, toolIcon.height);
+            var chairTool = new Chair(chairToolPosition, chairToolSize, $("#imgChair")[0]);
 
-            var chairTool = new Chair(0, 0, toolIcon.width, toolIcon.height, $("#imgChair")[0]);
-            var deskTool = new Desk(0, 0, toolIcon.width, toolIcon.height, $("#imgDesk")[0]);
+            var deskToolPosition = new Position(0, 0);
+            var deskToolSize = new Size(toolIcon.width, toolIcon.height);
+            var deskTool = new Desk(deskToolPosition, deskToolSize, $("#imgDesk")[0]);
 
             tools.push(chairTool);
             tools.push(deskTool);
@@ -161,20 +169,22 @@
         {
             var mousePosition = new MousePosition(ev);
 
-            if (mousePosition.x < toolBar.width)
+            if (mousePosition.position.x < toolBar.width)
             {//鼠标在toolBar内
                 for (var i = 0; i < tools.length;i++)
                 {
                     var tool = tools[i];
-                    if (tool.isCoverPoint(mousePosition.x, mousePosition.y))
+                    if (tool.isContainPoint(mousePosition.position.x, mousePosition.position.y))
                     {//鼠标在toolIcon内
+                        var position = new Position(0, 0);
+                        var size = new Size(toolIcon.width, toolIcon.height);
                         switch (tool.equipmentType)
                         {
                             case equipmentTypes.chair:
-                                mouseDownObj = new Chair(0, 0, toolIcon.width, toolIcon.height, $("#imgChair")[0]);
+                                mouseDownObj = new Chair(position,size, $("#imgChair")[0]);
                                 break;
                             case equipmentTypes.desk:
-                                mouseDownObj = new Desk(0, 0, toolIcon.width, toolIcon.height, $("#imgDesk")[0]);
+                                mouseDownObj = new Desk(position, size, $("#imgDesk")[0]);
                                 break;
                         }
                     }
@@ -182,7 +192,7 @@
                 
             }
 
-            //alert(mousePosition.x+"_"+mousePosition.y);
+            //alert(mousePosition.position.x+"_"+mousePosition.position.y);
         }
 
         function mouseMove(ev) {
@@ -192,12 +202,12 @@
             {
                 if (mouseDownObj.type == types.equipment)
                 {
-                    mouseDownObj.move(mousePosition.x, mousePosition.y);
+                    mouseDownObj.move(mousePosition.position.x, mousePosition.position.y);
                 }
             }
 
             drawEverything();
-            //alert(mousePosition.x+"_"+mousePosition.y);
+            //alert(mousePosition.position.x+"_"+mousePosition.position.y);
         }
 
         function mouseUp(ev)
@@ -224,7 +234,7 @@
         function drawEverything()
         {
             ctx.clearRect(0, 0, stage.width, stage.height);
-
+  
             for (var i = 0; i < everything.length; i++)
             {
                 everything[i].draw();
@@ -253,25 +263,23 @@
             this.height = height;
         }
 
-        function BaseObject(x, y, width, height,type)
+        function BaseObject(position,size,type)
         {
-            this.x=x;
-            this.y=y;
-            this.width = width;
-            this.height = height;
+            this.position = position;
+            this.size = size;
             this.type = type;
 
-            this.isCoverPoint = isCoverPoint;
+            this.isContainPoint = isContainPoint;
             this.isInObj = isInObj;
+            this.draw = drawObj;
+            this.move = moveObj;
         }
 
-      
-
-
-        function isCoverPoint(pointX, pointY)
+        function isContainPoint(pointX, pointY)
         {
-            if (pointX > this.x && pointX < this.x + this.width
-                && pointY > this.y && pointY < this.y + this.height) {
+            ////此处实现二维判断，未来可拓展三围
+            if (pointX > this.position.x && pointX < this.position.x + this.size.width
+                && pointY > this.position.y && pointY < this.position.y + this.size.height) {
                 return true;
             }
             else {
@@ -281,10 +289,11 @@
 
         function isInObj(obj)
         {
-            if (obj.isCoverPoint(this.x, this.y)//左上角
-                && obj.isCoverPoint(this.x + this.width, this.y)//右上角
-                && obj.isCoverPoint(this.x, this.y + this.height)//左下角
-                && obj.isCoverPoint(this.x + this.width, this.y + this.height)//右下角
+            //此处实现二维判断，未来可拓展三围
+            if (obj.isContainPoint(this.position.x, this.position.y)//左上角
+                && obj.isContainPoint(this.position.x + this.size.width, this.position.y)//右上角
+                && obj.isContainPoint(this.position.x, this.position.y + this.size.height)//左下角
+                && obj.isContainPoint(this.position.x + this.size.width, this.position.y + this.size.height)//右下角
                   )
             {
                 return true;
@@ -295,36 +304,39 @@
             }
         }
 
+        function drawObj()
+        {
+            if (typeof (this.img) != "undefined")
+            {
+                ctx.drawImage(this.img, this.position.x, this.position.y, this.size.width, this.size.height);
+            }
+        }
+
+        function moveObj(x, y)
+        {
+            this.position.x = x;
+            this.position.y = y;
+        }
+
         //Base End
 
         /*===========================================================================================================================*/
 
         //Equipment Begin
         
-        function Equipment(x, y, width, height, img, equipmentType) {
+        function Equipment(position,size, img, equipmentType) {
 
-            BaseObject.apply(this, new Array(x, y, width, height, Equipment.name));
+            BaseObject.apply(this, new Array(position,size, Equipment.name));
             this.equipmentType = equipmentType;
             this.img = img;
-            this.draw = drawEquipment;
-            this.move = moveEquipment;
         }
 
-        function drawEquipment() {
-            ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+        function Chair(position, size, img) {
+            Equipment.apply(this, new Array(position, size, img, Chair.name));
         }
 
-        function moveEquipment(x, y) {
-            this.x = x;
-            this.y = y;
-        }
-
-        function Chair(x,y,width, height, img) {
-            Equipment.apply(this, new Array(x, y, width, height, img, Chair.name));
-        }
-
-        function Desk(x, y, width, height, img) {
-            Equipment.apply(this, new Array(x, y, width, height, img, Desk.name));
+        function Desk(position, size, img) {
+            Equipment.apply(this, new Array(position, size, img, Desk.name));
         }
 
         //Equipment End
@@ -333,8 +345,8 @@
 
         //Room Begin
 
-        function Room(x, y, width, height) {
-            BaseObject.apply(this, new Array(x, y, width, height, Room.name));
+        function Room(position,size) {
+            BaseObject.apply(this, new Array(position, size, Room.name));
             this.equipments = new Array();
             this.draw = drawRoom;
             this.addEquipment = addEquipment;
@@ -342,7 +354,7 @@
 
         function drawRoom() {
             ctx.strokeStyle = "black";
-            ctx.strokeRect(this.x, this.y, this.width, this.height);
+            ctx.strokeRect(this.position.x, this.position.y, this.size.width, this.size.height);
         }
 
         function addEquipment(equipment)
@@ -396,8 +408,7 @@
                 my = ev.offsetY;
             }
 
-            this.x = mx;
-            this.y = my;
+            this.position = new Position(mx, my);
         }
 
         //MousePosition End
