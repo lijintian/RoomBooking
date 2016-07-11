@@ -10,7 +10,7 @@
     <title></title>
     <script src="~/Scripts/jquery-1.10.2.min.js"></script>
     <script src="~/Scripts/DesignRoom/BaseObject.js"></script>
-
+    <script src="~/Scripts/DesignRoom/Stage.js"></script>
     <script src="~/Scripts/DesignRoom/ToolBar.js"></script>
     <script src="~/Scripts/DesignRoom/Equipment.js"></script>
     <script src="~/Scripts/DesignRoom/Room.js"></script>
@@ -33,22 +33,8 @@
         var sourceCount = 0;
         var totalSourceCount = 2;
 
-
-        var stage = {
-            margin: 10,
-            width: 500,
-            height:500,
-        }
-
-        var equipmentTypes = {
-            chair: Chair.name,
-            desk: Desk.name
-        }
-
-        var types = {
-            equipment: Equipment.name,
-            room:Room.name
-        } 
+        var stage = new Stage(new Position(0, 0), new Size(500, 500), 10);
+        everything.push(stage);
 
         //Global Variable End
 
@@ -174,7 +160,7 @@
         {
             var mousePosition = new MousePosition(ev);
 
-            if (mousePosition.position.x < toolBar.size.width)
+            if (toolBar.isContainPoint(mousePosition.position.x,mousePosition.position.y))
             {//鼠标在toolBar内
                 for (var i = 0; i < toolBar.tools.length; i++)
                 {
@@ -185,16 +171,27 @@
                         var size = new Size(toolIcon.width, toolIcon.height);
                         switch (tool.equipmentType)
                         {
-                            case equipmentTypes.chair:
+                            case Chair.name:
                                 mouseDownObj = new Chair(position,size, $("#imgChair")[0]);
                                 break;
-                            case equipmentTypes.desk:
+                            case Desk.name:
                                 mouseDownObj = new Desk(position, size, $("#imgDesk")[0]);
                                 break;
                         }
                     }
                 }
                 
+            }
+            else if (stage.isContainPoint(mousePosition.position.x, mousePosition.position.y))
+            {//鼠标在stage内
+                for (var i = 0; i < currentRoom.equipments.length; i++)
+                {
+                    var equipment = currentRoom.equipments[i];
+
+                    if (equipment.isContainPoint(mousePosition.position.x, mousePosition.position.y)) {//鼠标在equipment内
+                        mouseDownObj = equipment;
+                        }
+                }
             }
 
             //alert(mousePosition.position.x+"_"+mousePosition.position.y);
@@ -205,9 +202,9 @@
 
             if (mouseDownObj != null)
             {
-                if (mouseDownObj.type == types.equipment)
+                if (mouseDownObj.type == Equipment.name)
                 {
-                    mouseDownObj.move(mousePosition.position.x, mousePosition.position.y);
+                    mouseDownObj.move(mousePosition.position.x - mouseDownObj.size.width / 2, mousePosition.position.y - mouseDownObj.size.height / 2);
                 }
             }
 
@@ -222,9 +219,23 @@
             if (mouseDownObj != null) {
                
                 if (mouseDownObj.isInObj(currentRoom)
-                    ) {//当前鼠标选中对象在对象内
+                    ) {//当前鼠标选中对象在Room对象内
                     var newObj = mouseDownObj;
-                    everything.push(newObj);
+               
+                    if (everything.indexOf(newObj) < 0)
+                    {//不存在时才添加
+                        everything.push(newObj);
+                    }
+
+                    if (newObj.type == Equipment.name)
+                    {//如果是设备
+                        if (currentRoom.equipments.indexOf(newObj) < 0)
+                        {//不存在时才添加
+                            currentRoom.addEquipment(newObj);
+                        }
+                       
+                    }
+                   
                     mouseDownObj = null;
                 }
                 else {
@@ -238,7 +249,7 @@
 
         function drawEverything()
         {
-            ctx.clearRect(0, 0, stage.width, stage.height);
+            ctx.clearRect(0, 0, stage.size.width, stage.size.height);
   
             for (var i = 0; i < everything.length; i++)
             {

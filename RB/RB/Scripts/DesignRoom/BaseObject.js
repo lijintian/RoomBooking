@@ -12,11 +12,18 @@ function BaseObject(position, size, type) {
     this.position = position;
     this.size = size;
     this.type = type;
+    this.objs = new Array();
 
+    this.addObj = addObj;
     this.isContainPoint = isContainPoint;
     this.isInObj = isInObj;
     this.draw = drawObj;
     this.move = moveObj;
+}
+
+function addObj(obj)
+{
+    this.objs.push(obj);
 }
 
 function isContainPoint(pointX, pointY) {
