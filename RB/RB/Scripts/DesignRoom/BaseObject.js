@@ -7,7 +7,14 @@ function Size(width, height) {
     this.width = width;
     this.height = height;
 }
-
+/**
+ * 基类
+ * @method BaseObject
+ * @param {Position} position 位置信息
+ * @param {Size} size 尺寸信息
+ * @param {string} type 类型
+ * @return {BaseObject} 基类对象
+ */
 function BaseObject(position, size, type) {
     this.position = position;
     this.size = size;
@@ -38,8 +45,6 @@ function removeSubObj(obj)
         this.subObjs.splice(indexInObj, 1);
     }
 }
-
-
 
 function isContainPoint(pointX, pointY) {
     ////此处实现二维判断，未来可拓展三围
