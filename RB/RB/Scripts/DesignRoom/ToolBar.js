@@ -2,15 +2,18 @@
 {
     BaseObject.apply(this, new Array(position, size, ToolBar.name));
     this.margin = margin;
-    this.tools = new Array();
-    this.addTool = addTool;
+    this.tools = this.subObjs;
+    this.addTool = this.addSubObj;
+    this.removeTool = this.removeSubObj;
+    this.removeAllTool = removeAllTool;
 }
 
 function Tool() {
     BaseObject.apply(this, new Array(position, size, Tool.name));
 }
 
-function addTool(tool)
+function removeAllTool()
 {
-    this.tools.push(tool);
+    this.tools = this.subObjs = new Array();
 }
+

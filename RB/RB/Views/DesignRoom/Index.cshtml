@@ -28,13 +28,15 @@
         //too尺寸
         var toolIcon
         //鼠标按下选中的对象
-        var mouseDownObj;
+        var mouseDownTool;
+
+        var mouseDownEquipment;
 
         var sourceCount = 0;
         var totalSourceCount = 2;
 
         var stage = new Stage(new Position(0, 0), new Size(500, 500), 10);
-        everything.push(stage);
+        
 
         //Global Variable End
 
@@ -76,6 +78,7 @@
         function generateRoom() {
             //重新生成要清空everything
             everything = new Array();
+            everything.push(stage);
 
             var width = $("#txtRoomWidth").val();
             var height = $("#txtRoomHeight").val();
@@ -105,8 +108,13 @@
             var roomWidth = width;
             var roomHeight = height;
 
-            var canvasWidth = stage.margin * 2 + width + toolBar.size.width;
-            var canvasHeight = stage.margin * 2 + height;
+            stage.size.width = roomWidth;
+            stage.size.height = roomHeight;
+            stage.position.x = roomX;
+            stage.position.y = roomY;
+
+            var canvasWidth = stage.margin * 2 + roomWidth + toolBar.size.width;
+            var canvasHeight = stage.margin * 2 + roomHeight;
 
             $(canvas).attr("width", canvasWidth);
             $(canvas).attr("height", canvasHeight);
@@ -125,7 +133,7 @@
         }
 
         function generateTools() {
-            toolBar.tools = new Array();
+            toolBar.removeAllTool();
             
             toolIcon = {
                 width: toolBar.size.width - 2 * toolBar.margin,
@@ -172,40 +180,56 @@
                         switch (tool.equipmentType)
                         {
                             case Chair.name:
-                                mouseDownObj = new Chair(position,size, $("#imgChair")[0]);
+                                mouseDownTool = new Chair(position,size, $("#imgChair")[0]);
                                 break;
                             case Desk.name:
-                                mouseDownObj = new Desk(position, size, $("#imgDesk")[0]);
+                                mouseDownTool = new Desk(position, size, $("#imgDesk")[0]);
                                 break;
                         }
+                        break;
                     }
                 }
                 
             }
             else if (stage.isContainPoint(mousePosition.position.x, mousePosition.position.y))
             {//鼠标在stage内
+            
                 for (var i = 0; i < currentRoom.equipments.length; i++)
                 {
                     var equipment = currentRoom.equipments[i];
 
                     if (equipment.isContainPoint(mousePosition.position.x, mousePosition.position.y)) {//鼠标在equipment内
-                        mouseDownObj = equipment;
+                        mouseDownEquipment = equipment;
+                        break;
                         }
                 }
             }
-
+            if (mouseDownTool != null || mouseDownEquipment != null) {
+                canvas.style.cursor = "pointer";
+            }
             //alert(mousePosition.position.x+"_"+mousePosition.position.y);
         }
 
         function mouseMove(ev) {
             var mousePosition = new MousePosition(ev);
 
-            if (mouseDownObj != null)
-            {
-                if (mouseDownObj.type == Equipment.name)
+            if (mouseDownTool != null)
+            {             
+                if (mouseDownTool.type == Equipment.name)
                 {
-                    mouseDownObj.move(mousePosition.position.x - mouseDownObj.size.width / 2, mousePosition.position.y - mouseDownObj.size.height / 2);
+                        mouseDownTool.move(mousePosition.position.x - mouseDownTool.size.width / 2, mousePosition.position.y - mouseDownTool.size.height / 2); 
                 }
+            }
+            if (mouseDownEquipment != null)
+            {//选中了房间内的设备移动
+                if (mouseDownEquipment.type == Equipment.name) {             
+                    mouseDownEquipment.move(mousePosition.position.x - mouseDownEquipment.size.width / 2, mousePosition.position.y - mouseDownEquipment.size.height / 2);
+                }
+            }
+
+            if (mouseDownTool != null || mouseDownEquipment != null)
+            {
+                canvas.style.cursor = "pointer";
             }
 
             drawEverything();
@@ -216,11 +240,10 @@
         {
             var mousePosition = new MousePosition(ev);
 
-            if (mouseDownObj != null) {
-               
-                if (mouseDownObj.isInObj(currentRoom)
+            if (mouseDownTool != null) {
+                if (mouseDownTool.isInObj(currentRoom)
                     ) {//当前鼠标选中对象在Room对象内
-                    var newObj = mouseDownObj;
+                    var newObj = mouseDownTool;
                
                     if (everything.indexOf(newObj) < 0)
                     {//不存在时才添加
@@ -229,19 +252,33 @@
 
                     if (newObj.type == Equipment.name)
                     {//如果是设备
-                        if (currentRoom.equipments.indexOf(newObj) < 0)
-                        {//不存在时才添加
-                            currentRoom.addEquipment(newObj);
-                        }
-                       
+                       currentRoom.addEquipment(newObj);
                     }
                    
-                    mouseDownObj = null;
+                   
                 }
-                else {
-                    mouseDownObj = null;
-                }
+                mouseDownTool = null;
                
+            }
+            if (mouseDownEquipment != null)
+            {
+                if (!mouseDownEquipment.isInObj(currentRoom))
+                {
+                    var indexInEveryThing = everything.indexOf(mouseDownEquipment);
+                    if (indexInEveryThing >= 0) {//不存在时才添加
+                        everything.splice(indexInEveryThing, 1);
+                    }
+
+                    if (mouseDownEquipment.type == Equipment.name) {//如果是设备
+                        currentRoom.removeEquipment(mouseDownEquipment);
+                    }
+                }
+
+                mouseDownEquipment = null;
+            }
+           
+            if (mouseDownTool == null && mouseDownEquipment == null) {
+                canvas.style.cursor = "default";
             }
 
             drawEverything();
@@ -249,16 +286,16 @@
 
         function drawEverything()
         {
-            ctx.clearRect(0, 0, stage.size.width, stage.size.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
   
             for (var i = 0; i < everything.length; i++)
             {
                 everything[i].draw();
             }
 
-            if (mouseDownObj != null)
+            if (mouseDownTool != null)
             {
-                mouseDownObj.draw();
+                mouseDownTool.draw();
             }
         }
 

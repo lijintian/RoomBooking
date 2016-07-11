@@ -12,24 +12,39 @@ function BaseObject(position, size, type) {
     this.position = position;
     this.size = size;
     this.type = type;
-    this.objs = new Array();
+    this.subObjs=new Array();
 
-    this.addObj = addObj;
+    this.addSubObj = addSubObj;
+    this.removeSubObj = removeSubObj;
     this.isContainPoint = isContainPoint;
     this.isInObj = isInObj;
     this.draw = drawObj;
     this.move = moveObj;
+    
 }
 
-function addObj(obj)
+function addSubObj(obj)
 {
-    this.objs.push(obj);
+    if (this.subObjs.indexOf(obj) < 0)
+    {
+        this.subObjs.push(obj);
+    }
 }
+
+function removeSubObj(obj)
+{
+    var indexInObj = this.subObjs.indexOf(obj);
+    if (indexInObj >= 0) {
+        this.subObjs.splice(indexInObj, 1);
+    }
+}
+
+
 
 function isContainPoint(pointX, pointY) {
     ////此处实现二维判断，未来可拓展三围
-    if (pointX > this.position.x && pointX < this.position.x + this.size.width
-        && pointY > this.position.y && pointY < this.position.y + this.size.height) {
+    if (pointX >= this.position.x && pointX <= this.position.x + this.size.width
+        && pointY >= this.position.y && pointY <= this.position.y + this.size.height) {
         return true;
     }
     else {
