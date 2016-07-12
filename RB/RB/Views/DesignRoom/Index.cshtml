@@ -174,6 +174,13 @@
         {
             var mousePosition = new MousePosition(ev);
 
+            for (var i = everything.length - 1; i >= 0; i--) {//从数据后往前找选中的对象
+                if (everything[i].isContainPoint(mousePosition.position.x, mousePosition.position.y)) {
+                    currentCheckedObj = everything[i];
+                    break;
+                }
+            }
+
             if (toolBar.isContainPoint(mousePosition.position.x,mousePosition.position.y))
             {//鼠标在toolBar内
                 for (var i = 0; i < toolBar.tools.length; i++)
@@ -182,7 +189,7 @@
                     if (tool.isContainPoint(mousePosition.position.x, mousePosition.position.y))
                     {//鼠标在toolIcon内
                         var position = new Position(0, 0);
-                        var size = new Size(toolIcon.width, toolIcon.height);
+                        var size = new Size(30, 30);
                         switch (tool.toolType)
                         {
                             case Chair.name:
@@ -205,23 +212,17 @@
 
                     if (equipment.isContainPoint(mousePosition.position.x, mousePosition.position.y)) {//鼠标在equipment内
                         mouseDownEquipment = equipment;
-                        showProperty(mousePosition.position.x + mouseDownEquipment.size.width, mousePosition.position.y + mouseDownEquipment.size.height,mouseDownEquipment.position,mouseDownEquipment.size);
+                        showProperty();
                         break;
                         }
                 }
             }
             if (mouseDownTool != null || mouseDownEquipment != null) {
                 canvas.style.cursor = "pointer";
+                
             }
 
-            for (var i = everything.length-1; i >= 0; i--)
-            {//从数据后往前找选中的对象
-                if(everything[i].isContainPoint(mousePosition.position.x, mousePosition.position.y))
-                {
-                    currentCheckedObj = everything[i];
-                    break;
-                }
-            }
+           
             //alert(mousePosition.position.x+"_"+mousePosition.position.y);
         }
 
@@ -239,7 +240,7 @@
             {//选中了房间内的设备移动
                 if (mouseDownEquipment.type == Equipment.name) {             
                     mouseDownEquipment.move(mousePosition.position.x - mouseDownEquipment.size.width / 2, mousePosition.position.y - mouseDownEquipment.size.height / 2);
-                    showProperty(mousePosition.position.x + mouseDownEquipment.size.width, mousePosition.position.y + mouseDownEquipment.size.height, mouseDownEquipment.position, mouseDownEquipment.size);
+                    showProperty();
                 }
             }
 
@@ -250,7 +251,6 @@
             
 
             drawEverything();
-            //alert(mousePosition.position.x+"_"+mousePosition.position.y);
         }
 
         function mouseUp(ev)
@@ -279,8 +279,7 @@
             }
             if (mouseDownEquipment != null)
             {
-                if (!mouseDownEquipment.isInObj(currentRoom))
-                {
+                if (!mouseDownEquipment.isInObj(currentRoom)) {
                     var indexInEveryThing = everything.indexOf(mouseDownEquipment);
                     if (indexInEveryThing >= 0) {//不存在时才添加
                         everything.splice(indexInEveryThing, 1);
@@ -312,10 +311,16 @@
             }
 
             if (currentCheckedObj != null) {
-              
+
                 if (currentCheckedObj.type == Equipment.name) {//当前选中了设备       
                     currentCheckedObj.check();
                 }
+                else {
+                    hideProperty();
+                }
+            }
+            else {
+                hideProperty();
             }
 
             if (mouseDownTool != null)
@@ -343,23 +348,62 @@
             $("#divLoading").text("loading..."+ sourceCount/totalSourceCount*100 + "%");
         }
 
-        function showProperty(x, y,position,size)
+        function showProperty()
         {
-            $("#divProperty").css("left", x);
-            $("#divProperty").css("top", y);
+            if (currentCheckedObj != null && currentCheckedObj.type == Equipment.name) {
+                var position = currentCheckedObj.position;
+                var size = currentCheckedObj.size;
 
-            $("#txtPositionX").val(position.x);
-            $("#txtPositionY").val(position.y);
+                $("#divProperty").css("left", position.x + size.width+canvas.offsetLeft);
+                $("#divProperty").css("top", position.y + size.height+canvas.offsetTop);
 
-            $("#txtSizeWidth").val(size.width);
-            $("#txtSizeHeight").val(size.height);
+                $("#txtPositionX").val(position.x - stage.position.x);
+                $("#txtPositionY").val(position.y - stage.position.y);
 
-            $("#divProperty").show();
+                $("#txtSizeWidth").val(size.width);
+                $("#txtSizeHeight").val(size.height);
+
+                $("#divProperty").show();
+            }
         }
 
         function hideProperty()
         {
             $("#divProperty").hide();
+        }
+
+        //生效属性
+        function effectProperty()
+        {
+            if (currentCheckedObj != null&&currentCheckedObj.type==Equipment.name)
+            {
+
+                var newPositionX = new Number($("#txtPositionX").val()) + stage.position.x;
+                var newPositionY = new Number($("#txtPositionY").val()) + stage.position.y;
+
+                var newSizeWidth = new Number($("#txtSizeWidth").val());
+                var newSizeHeight = new Number($("#txtSizeHeight").val());
+
+
+                var equipment = new Equipment(new Position(newPositionX, newPositionY), new Size(newSizeWidth, newSizeHeight), null, null);
+                if (equipment.isInObj(currentRoom)) {//新的坐标在room内才生效
+                    currentCheckedObj.position.x = newPositionX;
+                    currentCheckedObj.position.y = newPositionY;
+
+                    currentCheckedObj.size.width = newSizeWidth;
+                    currentCheckedObj.size.height = newSizeHeight;
+
+                    drawEverything();
+                    showProperty();
+
+                }
+                else {
+                    alert("位置尺寸信息超出范围,请重新填写");
+                }
+
+              
+            }
+            return false;
         }
 
         //Event End
@@ -372,7 +416,11 @@
             loading...0%
         </div>
 
-       
+        <div>
+            长：<input id="txtRoomWidth" type="text" value="500" />
+            宽：<input id="txtRoomHeight" type="text" value="500" />
+            <input type="button" id="btnEnter" value="确定" onclick="return generateRoom()" />
+        </div>
 
         <div>
             <canvas id="roomCanvas" style="border:1px solid black" width="500" height="500"></canvas>
@@ -390,17 +438,14 @@
                 <div class="property-area">
                     <div>Size:</div>
                     <div>
-                        <div><span>width:</span><input type="text" id="txtSizeWidth" value="" />px</div>
-                        <div><span>height:</span><input type="text" id="txtSizeHeight" value="" />px</div>
+                        <div><span>width:</span><input type="text"  id="txtSizeWidth" value="" />px</div>
+                        <div><span>height:</span><input type="text"  id="txtSizeHeight" value="" />px</div>
                     </div>
                 </div>
+                <div style="margin-left:auto;margin-right:auto">
+                    <input type="button" value="Enter" onclick="return effectProperty()" />
+                </div>
             </div>
-        </div>
-
-        <div>
-            长：<input id="txtRoomWidth" type="text" value="500" />
-            宽：<input id="txtRoomHeight" type="text" value="500" />
-            <input type="button" id="btnEnter" value="确定" onclick="return generateRoom()" />
         </div>
 
         <div id="divImg">
