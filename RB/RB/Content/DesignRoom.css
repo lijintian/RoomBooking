@@ -1,0 +1,68 @@
+﻿.property {
+  border:1px solid blue;
+  display:inline-block;
+  margin:5px;
+  padding:5px;
+  width:150px;
+  position:absolute;
+  top:0px;
+  left:0px;
+  background-color:lightblue;
+  z-index:999;
+  display:none;
+}
+    .property input[type='text'] {
+       width:50px;
+    }
+    .property span {
+        text-align:right;
+        display:inline-block;
+        width:60px;
+    }
+.property-title {
+   height:10px;
+}
+
+.property-close {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    cursor:pointer;
+    text-align:center;
+    vertical-align:middle;
+}
+
+    .property-close:hover {
+        width: 20px;
+        height: 20px;
+        position: absolute;
+        right: 0px;
+        top: 0px;
+        cursor:pointer;
+        background-color:white;
+    }
+
+    .property-close:active {
+        width: 20px;
+        height: 20px;
+        position: absolute;
+        right: 0px;
+        top: 0px;
+        cursor:pointer; 
+    }
+
+.property-area {
+    margin-bottom:5px;
+}
+
+.property-area>div:nth-child(1) {
+   margin-left:0px;
+}
+
+.property-area>div:nth-child(2) {
+   margin-left:10px;
+}
+
+

@@ -8,6 +8,9 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title></title>
+    <link href="~/Content/DesignRoom.css" rel="stylesheet" />
+
+
     <script src="~/Scripts/jquery-1.10.2.min.js"></script>
     <script src="~/Scripts/DesignRoom/BaseObject.js"></script>
     <script src="~/Scripts/DesignRoom/Stage.js"></script>
@@ -202,6 +205,7 @@
 
                     if (equipment.isContainPoint(mousePosition.position.x, mousePosition.position.y)) {//鼠标在equipment内
                         mouseDownEquipment = equipment;
+                        showProperty(mousePosition.position.x + mouseDownEquipment.size.width, mousePosition.position.y + mouseDownEquipment.size.height,mouseDownEquipment.position,mouseDownEquipment.size);
                         break;
                         }
                 }
@@ -235,6 +239,7 @@
             {//选中了房间内的设备移动
                 if (mouseDownEquipment.type == Equipment.name) {             
                     mouseDownEquipment.move(mousePosition.position.x - mouseDownEquipment.size.width / 2, mousePosition.position.y - mouseDownEquipment.size.height / 2);
+                    showProperty(mousePosition.position.x + mouseDownEquipment.size.width, mousePosition.position.y + mouseDownEquipment.size.height, mouseDownEquipment.position, mouseDownEquipment.size);
                 }
             }
 
@@ -242,6 +247,7 @@
             {
                 canvas.style.cursor = "pointer";
             }
+            
 
             drawEverything();
             //alert(mousePosition.position.x+"_"+mousePosition.position.y);
@@ -282,10 +288,10 @@
 
                     if (mouseDownEquipment.type == Equipment.name) {//如果是设备
                         currentRoom.removeEquipment(mouseDownEquipment);
+                        hideProperty();
                     }
                     currentCheckedObj = null;
                 }
-
                 mouseDownEquipment = null;
             }
            
@@ -337,6 +343,25 @@
             $("#divLoading").text("loading..."+ sourceCount/totalSourceCount*100 + "%");
         }
 
+        function showProperty(x, y,position,size)
+        {
+            $("#divProperty").css("left", x);
+            $("#divProperty").css("top", y);
+
+            $("#txtPositionX").val(position.x);
+            $("#txtPositionY").val(position.y);
+
+            $("#txtSizeWidth").val(size.width);
+            $("#txtSizeHeight").val(size.height);
+
+            $("#divProperty").show();
+        }
+
+        function hideProperty()
+        {
+            $("#divProperty").hide();
+        }
+
         //Event End
         /*===========================================================================================================================*/
     </script>
@@ -347,14 +372,35 @@
             loading...0%
         </div>
 
+       
+
+        <div>
+            <canvas id="roomCanvas" style="border:1px solid black" width="500" height="500"></canvas>
+            <div id="divProperty" class="property">
+                <div class="property-title">
+                    <div class="property-close" onclick="hideProperty()">×</div>
+                </div>
+                <div class="property-area">
+                    <div>Position:</div>
+                    <div>
+                        <div><span>x:</span><input type="text" id="txtPositionX" value="" />px</div>
+                        <div><span>y:</span><input type="text" id="txtPositionY" value="" />px</div>
+                    </div>
+                </div>
+                <div class="property-area">
+                    <div>Size:</div>
+                    <div>
+                        <div><span>width:</span><input type="text" id="txtSizeWidth" value="" />px</div>
+                        <div><span>height:</span><input type="text" id="txtSizeHeight" value="" />px</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div>
             长：<input id="txtRoomWidth" type="text" value="500" />
             宽：<input id="txtRoomHeight" type="text" value="500" />
             <input type="button" id="btnEnter" value="确定" onclick="return generateRoom()" />
-        </div>
-
-        <div>
-            <canvas id="roomCanvas" style="border:1px solid black" width="500" height="500"></canvas>
         </div>
 
         <div id="divImg">
