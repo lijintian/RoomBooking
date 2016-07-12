@@ -27,10 +27,12 @@
         var toolBar
         //too尺寸
         var toolIcon
-        //鼠标按下选中的对象
+        //鼠标按下选中的工具
         var mouseDownTool;
-
+        //鼠标按下选中的设备
         var mouseDownEquipment;
+        //当前选中对象
+        var currentCheckedObj;
 
         var sourceCount = 0;
         var totalSourceCount = 2;
@@ -97,10 +99,11 @@
             }
 
             //创建一个toolBar
-            var toolBarPosition = new Position(0, 0);
+            var toolBarPosition = new Position(0, 10);
             var toolBarSize = new Size(50, height);
             var toolBarMargin = 5;
             toolBar = new ToolBar(toolBarPosition, toolBarSize, toolBarMargin);
+            everything.push(toolBar);
 
             var roomX = stage.margin + toolBar.size.width;
             var roomY = stage.margin;
@@ -142,11 +145,11 @@
 
             var chairToolPosition = new Position(0, 0);
             var chairToolSize = new Size(toolIcon.width, toolIcon.height);
-            var chairTool = new Chair(chairToolPosition, chairToolSize, $("#imgChair")[0]);
+            var chairTool = new Tool(chairToolPosition, chairToolSize, $("#imgChair")[0],Chair.name);
 
             var deskToolPosition = new Position(0, 0);
             var deskToolSize = new Size(toolIcon.width, toolIcon.height);
-            var deskTool = new Desk(deskToolPosition, deskToolSize, $("#imgDesk")[0]);
+            var deskTool = new Tool(deskToolPosition, deskToolSize, $("#imgDesk")[0],Desk.name);
 
             toolBar.addTool(chairTool);
             toolBar.addTool(deskTool);
@@ -177,7 +180,7 @@
                     {//鼠标在toolIcon内
                         var position = new Position(0, 0);
                         var size = new Size(toolIcon.width, toolIcon.height);
-                        switch (tool.equipmentType)
+                        switch (tool.toolType)
                         {
                             case Chair.name:
                                 mouseDownTool = new Chair(position,size, $("#imgChair")[0]);
@@ -188,8 +191,7 @@
                         }
                         break;
                     }
-                }
-                
+                }   
             }
             else if (stage.isContainPoint(mousePosition.position.x, mousePosition.position.y))
             {//鼠标在stage内
@@ -206,6 +208,15 @@
             }
             if (mouseDownTool != null || mouseDownEquipment != null) {
                 canvas.style.cursor = "pointer";
+            }
+
+            for (var i = everything.length-1; i >= 0; i--)
+            {//从数据后往前找选中的对象
+                if(everything[i].isContainPoint(mousePosition.position.x, mousePosition.position.y))
+                {
+                    currentCheckedObj = everything[i];
+                    break;
+                }
             }
             //alert(mousePosition.position.x+"_"+mousePosition.position.y);
         }
@@ -272,6 +283,7 @@
                     if (mouseDownEquipment.type == Equipment.name) {//如果是设备
                         currentRoom.removeEquipment(mouseDownEquipment);
                     }
+                    currentCheckedObj = null;
                 }
 
                 mouseDownEquipment = null;
@@ -291,6 +303,13 @@
             for (var i = 0; i < everything.length; i++)
             {
                 everything[i].draw();
+            }
+
+            if (currentCheckedObj != null) {
+              
+                if (currentCheckedObj.type == Equipment.name) {//当前选中了设备       
+                    currentCheckedObj.check();
+                }
             }
 
             if (mouseDownTool != null)

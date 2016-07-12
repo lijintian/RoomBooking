@@ -14,17 +14,35 @@ function ToolBar(position, size, margin)
     this.addTool = this.addSubObj;
     this.removeTool = this.removeSubObj;
     this.removeAllTool = removeAllTool;
+    this.draw = drawToolBar;
 }
 
-function Tool() {
-    BaseObject.apply(this, new Array(position, size, Tool.name));
+function drawToolBar() {
+    ctx.strokeStyle = "white";
+    ctx.strokeRect(this.position.x, this.position.y, this.size.width, this.size.height);
 }
+
 /**
  * 移除所有工具
  * @return {void} 无返回
  */
-function removeAllTool()
-{
+function removeAllTool() {
     this.tools = this.subObjs = new Array();
 }
+
+/**
+ * 工具类
+ * @method Tool
+ * @param {Position} position 位置信息
+ * @param {Size} size 尺寸信息
+ * @param {Image} toolImg 工具图片
+ * @param {String} toolType 工具类型
+ * @return {Tool} 工具类对象
+ */
+function Tool(position, size, toolImg, toolType) {
+    BaseObject.apply(this, new Array(position, size, Tool.name));
+    this.img = toolImg;
+    this.toolType = toolType;
+}
+
 

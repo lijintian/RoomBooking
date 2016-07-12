@@ -27,7 +27,7 @@ function BaseObject(position, size, type) {
     this.isInObj = isInObj;
     this.draw = drawObj;
     this.move = moveObj;
-    
+    this.check = checkObj;
 }
 
 function addSubObj(obj)
@@ -80,6 +80,12 @@ function drawObj() {
 function moveObj(x, y) {
     this.position.x = x;
     this.position.y = y;
+}
+
+function checkObj()
+{
+    ctx.strokeStyle = "blue";
+    ctx.strokeRect(currentCheckedObj.position.x, currentCheckedObj.position.y, currentCheckedObj.size.width, currentCheckedObj.size.height);
 }
 
 /*===========================================================================================================================*/
