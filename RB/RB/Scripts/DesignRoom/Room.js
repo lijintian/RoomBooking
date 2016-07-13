@@ -6,6 +6,7 @@
  * @return {Room} 室对象
  */
 function Room(position, size) {
+    Room.name = "Room";
     BaseObject.apply(this, new Array(position, size, Room.name));
     this.equipments = this.subObjs;
     this.draw = drawRoom;

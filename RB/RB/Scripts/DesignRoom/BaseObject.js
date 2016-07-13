@@ -26,7 +26,7 @@ function BaseObject(position, size, type) {
     this.isContainPoint = isContainPoint;
     this.isInObj = isInObj;
     this.draw = drawObj;
-    this.move = moveObj;
+    this.moveTo = moveObj;
     this.check = checkObj;
 }
 
@@ -95,13 +95,13 @@ function MousePosition(ev) {
     var mx;
     var my;
 
-    if (ev.layerX || ev.layerX == 0) {
-        mx = ev.layerX;
-        my = ev.layerY;
-    }
-    else if (ev.offsetX || ev.offsetX == 0) {
+   
+    if (ev.offsetX || ev.offsetX == 0) {
         mx = ev.offsetX;
         my = ev.offsetY;
+    } else if (ev.layerX || ev.layerX == 0) {
+        mx = ev.layerX;
+        my = ev.layerY;
     }
 
     this.position = new Position(mx, my);

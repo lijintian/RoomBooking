@@ -7,6 +7,7 @@
  * @return {Stage} 舞台对象
  */
 function Stage(position, size, margin) {
+    Stage.name = "Stage";
     BaseObject.apply(this, new Array(position, size, Stage.name));
     this.margin = margin;
 }

@@ -7,5 +7,6 @@
 */
 function PropertyBar(position, size)
 {
+    PropertyBar.name = "PropertyBar";
     BaseObject.apply(this, new Array(position, size, PropertyBar.name));
 }

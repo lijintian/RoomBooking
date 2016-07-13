@@ -8,6 +8,7 @@
  */
 function ToolBar(position, size, margin)
 {
+    ToolBar.name = "ToolBar";
     BaseObject.apply(this, new Array(position, size, ToolBar.name));
     this.margin = margin;
     this.tools = this.subObjs;
@@ -40,6 +41,7 @@ function removeAllTool() {
  * @return {Tool} 工具类对象
  */
 function Tool(position, size, toolImg, toolType) {
+    Tool.name = "Tool";
     BaseObject.apply(this, new Array(position, size, Tool.name));
     this.img = toolImg;
     this.toolType = toolType;

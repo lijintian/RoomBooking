@@ -7,7 +7,7 @@
  * @return {Equipment} 设备对象
  */
 function Equipment(position, size, img, equipmentType) {
-
+    Equipment.name = "Equipment";//兼容IE
     BaseObject.apply(this, new Array(position, size, Equipment.name));
     this.equipmentType = equipmentType;
     this.img = img;
@@ -22,6 +22,7 @@ function Equipment(position, size, img, equipmentType) {
  * @return {Chair} 椅子对象
  */
 function Chair(position, size, img) {
+    Chair.name = "Chair";//兼容IE
     Equipment.apply(this, new Array(position, size, img, Chair.name));
 }
 
@@ -34,5 +35,6 @@ function Chair(position, size, img) {
  * @return {Desk} 桌子对象
  */
 function Desk(position, size, img) {
+    Desk.name = "Desk";//兼容IE
     Equipment.apply(this, new Array(position, size, img, Desk.name));
 }
