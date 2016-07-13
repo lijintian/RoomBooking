@@ -26,8 +26,9 @@ function BaseObject(position, size, type) {
     this.isContainPoint = isContainPoint;
     this.isInObj = isInObj;
     this.draw = drawObj;
-    this.moveTo = moveObj;
+    this.moveTo = moveObjTo;
     this.check = checkObj;
+    this.moveUnit = moveUnit;
 }
 
 function addSubObj(obj)
@@ -77,7 +78,7 @@ function drawObj() {
     }
 }
 
-function moveObj(x, y) {
+function moveObjTo(x, y) {
     this.position.x = x;
     this.position.y = y;
 }
@@ -88,6 +89,11 @@ function checkObj()
     ctx.strokeRect(currentCheckedObj.position.x, currentCheckedObj.position.y, currentCheckedObj.size.width, currentCheckedObj.size.height);
 }
 
+function moveUnit(xUnit, yUnit)
+{
+    this.position.x += xUnit;
+    this.position.y += yUnit;
+}
 /*===========================================================================================================================*/
 //MousePosition Begin
 
