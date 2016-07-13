@@ -9,9 +9,9 @@
     <meta name="viewport" content="width=device-width" />
     <title></title>
     <link href="~/Content/DesignRoom.css" rel="stylesheet" />
-
-
+    
     <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/DesignRoom/Extend.js"></script>
     <script src="~/Scripts/DesignRoom/BaseObject.js"></script>
     <script src="~/Scripts/DesignRoom/Stage.js"></script>
     <script src="~/Scripts/DesignRoom/ToolBar.js"></script>
@@ -21,6 +21,8 @@
         /*===========================================================================================================================*/
 
         //Global Variable Begin
+        var stapArray = new Array();
+        var nextStapArray = new Array();
 
         var everything=new Array();
         var loadingInterval;
@@ -39,6 +41,7 @@
 
         var sourceCount = 0;
         var totalSourceCount = 2;
+        var hasNewRecord = false;
 
         var stage = new Stage(new Position(0, 0), new Size(500, 500), 10);
         
@@ -56,7 +59,7 @@
             canvas.addEventListener("mousedown", mouseDown, false);
             canvas.addEventListener("mousemove", mouseMove, false);
             canvas.addEventListener("mouseup", mouseUp, false);
-            window.addEventListener("keydown", keyDown, false);
+            document.addEventListener("keydown", keyDown, false);
 
             showLoading();
             loadingInterval = window.setInterval(load, 100);
@@ -67,16 +70,12 @@
         /*===========================================================================================================================*/
 
         //Keyboard And Mouse Event Begin
+
         function keyDown(ev) {
+            var e = ev || window.event;
             var keyCode;
-            if (ev == null) {
-                keyCode = window.ev.keyCode;
-                window.ev.preventDefault();//停止默认动作
-            }
-            else {
-                keyCode = ev.keyCode;
-                ev.preventDefault();//停止默认动作
-            }
+            keyCode = e.keyCode;
+            e.preventDefault();//停止默认动作
 
             switch (keyCode) {
                 case 37://←
@@ -91,14 +90,27 @@
                 case 40://↓
                     keyboardButtomDown();
                     break
+                case 89://y
+                    if (e.ctrlKey) {
+                        keyboardCtrlYDown();
+                    }
+                    break;
+                case 90://z
+                    if(e.ctrlKey)
+                    {
+                        keyboardCtrlZDown();
+                    }
+                    break;
+                   
+                   
+                    
                 default:
                     window.removeEventListener("keydown", keyDown, false);
                     break
             }
-
+           
             drawEverything();
         }
-
       
         function keyboardRightDown() {
             if (currentCheckedObj !== null && currentCheckedObj.type == Equipment.name) {
@@ -106,7 +118,8 @@
                 currentCheckedObj.moveUnit(mouveUnit, 0);
                 mouveUnit=currentCheckedObj.isInObj(currentRoom) ? 0 : -1;
                 currentCheckedObj.moveUnit(mouveUnit, 0);
-                showProperty(); 
+                showProperty();
+                RecordStap();
             }
         }
 
@@ -117,6 +130,7 @@
                 mouveUnit = currentCheckedObj.isInObj(currentRoom) ? 0 : 1;
                 currentCheckedObj.moveUnit(0, mouveUnit);
                 showProperty();
+                RecordStap();
             }
         }
 
@@ -127,9 +141,9 @@
                 mouveUnit = currentCheckedObj.isInObj(currentRoom) ? 0 : 1;
                 currentCheckedObj.moveUnit(mouveUnit,0);
                 showProperty();
+                RecordStap();
             }
         }
-
 
         function keyboardButtomDown() {
             if (currentCheckedObj !== null && currentCheckedObj.type == Equipment.name) {
@@ -138,7 +152,17 @@
                 mouveUnit = currentCheckedObj.isInObj(currentRoom) ? 0 : -1;
                 currentCheckedObj.moveUnit(0, mouveUnit);
                 showProperty();
+                RecordStap();
             }
+        }
+
+        function keyboardCtrlZDown()
+        {
+            PreStap();
+        }
+
+        function keyboardCtrlYDown() {
+            NextStap();
         }
 
 
@@ -255,6 +279,8 @@
             }
 
             drawEverything();
+
+            RecordStap()
         }
 
         //Keyboard And Mouse Event End
@@ -461,6 +487,8 @@
                     drawEverything();
                     showProperty();
 
+                    RecordStap();
+
                 }
                 else {
                     alert("位置尺寸信息超出范围,请重新填写");
@@ -469,6 +497,58 @@
               
             }
             return false;
+        }
+
+        //记录操作步骤
+        function RecordStap()
+        {
+            if (stapArray.length == 0) {
+                stapArray.push(everything.clone());
+                hasNewRecord = true;
+                nextStapArray = new Array();
+            }
+            else {
+                var lastStap = stapArray.pop();
+                stapArray.push(lastStap);
+                if (!lastStap.equal(everything))
+                {
+                    stapArray.push(everything.clone());
+                    hasNewRecord = true;
+                    nextStapArray = new Array();
+                }
+                
+            }
+        }
+
+        //前一步
+        function PreStap()
+        {
+            if (stapArray.length > 0) {
+                nextStapArray.push(everything);
+                everything = stapArray.pop();
+                if (hasNewRecord)
+                {
+                    debugger;
+                    everything = stapArray.pop();
+                    hasNewRecord = false;
+                }
+                currentRoom = everything[2];
+                toolBar = everything[1];
+
+                drawEverything();
+                currentCheckedObj = null;
+            }
+        }
+        
+        //后一步
+        function NextStap()
+        {
+            if (nextStapArray.length > 0) {
+                everything = nextStapArray.pop();
+                stapArray.push(everything);
+                drawEverything();
+                currentCheckedObj = null;
+            }
         }
 
         //Event End
@@ -482,9 +562,9 @@
         </div>
 
         <div>
-            长：<input id="txtRoomWidth" type="text" value="500" />
-            宽：<input id="txtRoomHeight" type="text" value="500" />
-            <input type="button" id="btnEnter" value="确定" onclick="return generateRoom()" />
+            RoomWidth：<input id="txtRoomWidth" type="text" value="500" />
+            RoomHeight：<input id="txtRoomHeight" type="text" value="500" />
+            <input type="button" id="btnEnter" value="Enter" onclick="return generateRoom()" />
         </div>
 
         <div>

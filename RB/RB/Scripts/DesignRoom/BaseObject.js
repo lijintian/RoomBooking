@@ -29,6 +29,37 @@ function BaseObject(position, size, type) {
     this.moveTo = moveObjTo;
     this.check = checkObj;
     this.moveUnit = moveUnit;
+    this.equal = equalObj;
+    this.clone = clone;
+}
+
+function clone() {
+   return cloneObj(this);
+}
+
+function cloneObj(obj) {
+    var o;
+    if (obj.constructor.name == "HTMLImageElement")
+    {//todo:name 在IE不兼容
+        return $(obj)[0];
+    }
+    if (obj.constructor == Object) {
+        o = new obj.constructor();
+    } else {
+        o = new obj.constructor(obj.valueOf());
+        }
+    for (var key in obj) {
+        if (o[key]!= obj[key]) {
+            if (typeof (obj[key]) == 'object') {
+                o[key]= cloneObj(obj[key]);
+        } else {
+                o[key]= obj[key];
+}
+        }
+        }
+    o.toString = obj.toString;
+    o.valueOf = obj.valueOf;
+    return o;
 }
 
 function addSubObj(obj)
@@ -93,6 +124,17 @@ function moveUnit(xUnit, yUnit)
 {
     this.position.x += xUnit;
     this.position.y += yUnit;
+}
+
+function equalObj(obj) {
+    if (this.position.x == obj.position.x && this.position.y == obj.position.y
+   && this.size.width.valueOf() == obj.size.width.valueOf() && this.size.height.valueOf() == obj.size.height.valueOf()
+   ) {
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 /*===========================================================================================================================*/
 //MousePosition Begin
