@@ -22,7 +22,6 @@
 
         //Global Variable Begin
         var stapArray = new Array();
-        var nextStapArray = new Array();
 
         var everything=new Array();
         var loadingInterval;
@@ -41,7 +40,7 @@
 
         var sourceCount = 0;
         var totalSourceCount = 2;
-        var hasNewRecord = false;
+
 
         var stage = new Stage(new Position(0, 0), new Size(500, 500), 10);
         
@@ -504,51 +503,87 @@
         {
             if (stapArray.length == 0) {
                 stapArray.push(everything.clone());
-                hasNewRecord = true;
-                nextStapArray = new Array();
+                stapPointer = stapArray.length - 1;
             }
             else {
-                var lastStap = stapArray.pop();
-                stapArray.push(lastStap);
+                var lastStap = stapArray[stapPointer];
                 if (!lastStap.equal(everything))
                 {
+                    if (stapPointer != stapArray.length - 1)
+                    {//指针不在栈顶
+                        while (stapPointer < stapArray.length - 1) {//去除Pointer上的数据
+                            stapArray.pop();
+                        }
+                    }
+                   
+
                     stapArray.push(everything.clone());
-                    hasNewRecord = true;
-                    nextStapArray = new Array();
+                    stapPointer = stapArray.length - 1;
                 }
                 
             }
+           
         }
 
-        //前一步
+        var stapPointer = 0;
+
+        //后退一步
         function PreStap()
         {
-            if (stapArray.length > 0) {
-                nextStapArray.push(everything);
-                everything = stapArray.pop();
-                if (hasNewRecord)
-                {
-                    debugger;
-                    everything = stapArray.pop();
-                    hasNewRecord = false;
-                }
-                currentRoom = everything[2];
-                toolBar = everything[1];
+            stapPointer--;
 
+            if (stapPointer >= 0) {
+                everything = stapArray[stapPointer].clone();
+                
+                ResetCurrentObj();
+               
                 drawEverything();
-                currentCheckedObj = null;
+            }
+            else {
+                stapPointer = 0;
             }
         }
         
-        //后一步
+        //前进一步
         function NextStap()
         {
-            if (nextStapArray.length > 0) {
-                everything = nextStapArray.pop();
-                stapArray.push(everything);
+            stapPointer++;
+
+            if (stapPointer < stapArray.length) {
+                everything = stapArray[stapPointer].clone();
+                
+                ResetCurrentObj();
+
                 drawEverything();
-                currentCheckedObj = null;
             }
+            else {
+                stapPointer = stapArray.length - 1;
+            }
+        }
+
+        function ResetCurrentObj()
+        {
+            currentRoom = everything[2];
+
+            currentRoom.removeAllEquipment();
+
+            for (var i = 0; i < everything.length; i++) {
+                if (everything[i].type == Equipment.name) {
+                    currentRoom.addEquipment(everything[i]);
+                }
+            }
+
+            toolBar = everything[1];
+
+            toolBar.removeAllTool();
+
+            for (var i = 0; i < everything.length; i++) {
+                if (everything[i].type == Tool.name) {
+                    toolBar.addTool(everything[i]);
+                }
+            }
+
+            currentCheckedObj = null;
         }
 
         //Event End

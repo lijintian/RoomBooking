@@ -12,9 +12,15 @@ function Room(position, size) {
     this.draw = drawRoom;
     this.addEquipment = this.addSubObj;
     this.removeEquipment = this.removeSubObj;
+    this.removeAllEquipment = removeAllEquipment;
 }
 
 function drawRoom() {
     ctx.strokeStyle = "black";
     ctx.strokeRect(this.position.x, this.position.y, this.size.width, this.size.height);
+}
+
+function removeAllEquipment()
+{
+    this.equipments = this.subObjs = new Array();
 }
