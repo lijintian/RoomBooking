@@ -3,14 +3,14 @@
  * @method Desk
  * @param {Position} position 位置信息
  * @param {Size} size 尺寸信息
- * @param {int} margin 外空隙
+ * @param {int} padding 内空隙
  * @return {ToolBar} 工具栏对象
  */
-function ToolBar(position, size, margin)
+function ToolBar(position, size, padding)
 {
     ToolBar.name = "ToolBar";
     BaseObject.apply(this, new Array(position, size, ToolBar.name));
-    this.margin = margin;
+    this.padding = padding;
     this.tools = this.subObjs;
     this.addTool = this.addSubObj;
     this.removeTool = this.removeSubObj;
@@ -19,8 +19,9 @@ function ToolBar(position, size, margin)
 }
 
 function drawToolBar() {
-    ctx.strokeStyle = "white";
+    ctx.strokeStyle = "blue";
     ctx.strokeRect(this.position.x, this.position.y, this.size.width, this.size.height);
+    this.drawName();
 }
 
 /**

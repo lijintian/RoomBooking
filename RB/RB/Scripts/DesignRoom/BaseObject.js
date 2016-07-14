@@ -19,13 +19,14 @@ function BaseObject(position, size, type) {
     this.position = position;
     this.size = size;
     this.type = type;
-    this.subObjs=new Array();
+    this.subObjs = new Array();
 
     this.addSubObj = addSubObj;
     this.removeSubObj = removeSubObj;
     this.isContainPoint = isContainPoint;
     this.isInObj = isInObj;
     this.draw = drawObj;
+    this.drawName = drawObjName;
     this.moveTo = moveObjTo;
     this.check = checkObj;
     this.moveUnit = moveUnit;
@@ -34,44 +35,40 @@ function BaseObject(position, size, type) {
 }
 
 function clone() {
-   return cloneObj(this);
+    return cloneObj(this);
 }
 
 function cloneObj(obj) {
     var o;
-    if (obj.constructor.name == "HTMLImageElement")
-    {//todo:name 在IE不兼容
+    if (obj.constructor.name == "HTMLImageElement") {//todo:name 在IE不兼容
         return $(obj)[0];
     }
     if (obj.constructor == Object) {
         o = new obj.constructor();
     } else {
         o = new obj.constructor(obj.valueOf());
-        }
+    }
     for (var key in obj) {
-        if (o[key]!= obj[key]) {
+        if (o[key] != obj[key]) {
             if (typeof (obj[key]) == 'object') {
-                o[key]= cloneObj(obj[key]);
-        } else {
-                o[key]= obj[key];
-}
+                o[key] = cloneObj(obj[key]);
+            } else {
+                o[key] = obj[key];
+            }
         }
-        }
+    }
     o.toString = obj.toString;
     o.valueOf = obj.valueOf;
     return o;
 }
 
-function addSubObj(obj)
-{
-    if (this.subObjs.indexOf(obj) < 0)
-    {
+function addSubObj(obj) {
+    if (this.subObjs.indexOf(obj) < 0) {
         this.subObjs.push(obj);
     }
 }
 
-function removeSubObj(obj)
-{
+function removeSubObj(obj) {
     var indexInObj = this.subObjs.indexOf(obj);
     if (indexInObj >= 0) {
         this.subObjs.splice(indexInObj, 1);
@@ -107,6 +104,39 @@ function drawObj() {
     if (typeof (this.img) != "undefined") {
         ctx.drawImage(this.img, this.position.x, this.position.y, this.size.width, this.size.height);
     }
+    this.drawName();
+}
+
+function drawObjName() {
+    if (typeof (showObjType) != "undefined") {
+        if (showObjType) {
+            ctx.fillStyle = "blue";            
+            ctx.textBaseline = 'top'
+            var txtLength = ctx.measureText(this.type).width;
+            var titleX=0;
+             var titleY=0;
+            switch (this.type) {
+                case Equipment.name:
+                    titleX = this.position.x+this.size.width;
+                    titleY = this.position.y-11;
+                    ctx.fillText(this.type, titleX, titleY);
+                    break;
+                case Tool.name:
+                    titleX = this.position.x +(this.size.width -txtLength)/2;
+                    titleY = this.position.y+this.size.height -5;
+                    ctx.clearRect(titleX, titleY, txtLength, 10);
+                    ctx.fillText(this.type, titleX, titleY);
+                    break;
+                default:
+                    titleX = this.position.x +this.size.width - txtLength-4;
+                    titleY = this.position.y - 5;
+                    ctx.clearRect(titleX,titleY,txtLength,10);
+                    ctx.fillText(this.type, titleX, titleY);
+                    break;
+            }
+           
+        }
+    }
 }
 
 function moveObjTo(x, y) {
@@ -114,14 +144,12 @@ function moveObjTo(x, y) {
     this.position.y = y;
 }
 
-function checkObj()
-{
+function checkObj() {
     ctx.strokeStyle = "blue";
     ctx.strokeRect(currentCheckedObj.position.x, currentCheckedObj.position.y, currentCheckedObj.size.width, currentCheckedObj.size.height);
 }
 
-function moveUnit(xUnit, yUnit)
-{
+function moveUnit(xUnit, yUnit) {
     this.position.x += xUnit;
     this.position.y += yUnit;
 }
@@ -143,7 +171,7 @@ function MousePosition(ev) {
     var mx;
     var my;
 
-   
+
     if (ev.offsetX || ev.offsetX == 0) {
         mx = ev.offsetX;
         my = ev.offsetY;

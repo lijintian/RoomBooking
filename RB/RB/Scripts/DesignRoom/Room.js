@@ -18,6 +18,7 @@ function Room(position, size) {
 function drawRoom() {
     ctx.strokeStyle = "black";
     ctx.strokeRect(this.position.x, this.position.y, this.size.width, this.size.height);
+    this.drawName();
 }
 
 function removeAllEquipment()

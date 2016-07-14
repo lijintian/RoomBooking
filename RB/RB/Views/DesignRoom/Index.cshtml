@@ -19,6 +19,7 @@
     <script src="~/Scripts/DesignRoom/Room.js"></script>
     <script type="text/javascript">
         /*===========================================================================================================================*/
+        var showObjType = true;
 
         //Global Variable Begin
         var stapArray = new Array();
@@ -29,6 +30,7 @@
         var ctx;
         var currentRoom;
         var toolBar
+        var stage;
         //too尺寸
         var toolIcon
         //鼠标按下选中的工具
@@ -42,7 +44,7 @@
         var totalSourceCount = 2;
 
 
-        var stage = new Stage(new Position(0, 0), new Size(500, 500), 10);
+        
         
 
         //Global Variable End
@@ -69,46 +71,50 @@
         /*===========================================================================================================================*/
 
         //Keyboard And Mouse Event Begin
+        var preventDefaultKeyCode = [37, 38, 39, 40, 89, 90];
 
         function keyDown(ev) {
             var e = ev || window.event;
             var keyCode;
             keyCode = e.keyCode;
-            e.preventDefault();//停止默认动作
+            
+       
+            if (preventDefaultKeyCode.indexOf(keyCode) >= 0)
+            {
+                e.preventDefault();//停止默认动作
+                switch (keyCode) {
+                    case 37://←   
+                        keyboardLeftDown();
+                        break;
+                    case 38://↑
+                        keyboardTopDown();
+                        break
+                    case 39://→
+                        keyboardRightDown();
+                        break
+                    case 40://↓
+                        keyboardButtomDown();
+                        break
+                    case 89://y
+                        if (e.ctrlKey) {
+                            keyboardCtrlYDown();
+                        }
+                        break;
+                    case 90://z
+                        if (e.ctrlKey) {
+                            keyboardCtrlZDown();
+                        }
+                        break;
 
-            switch (keyCode) {
-                case 37://←
-                    keyboardLeftDown();
-                    break;
-                case 38://↑
-                    keyboardTopDown();
-                    break
-                case 39://→
-                    keyboardRightDown();
-                    break
-                case 40://↓
-                    keyboardButtomDown();
-                    break
-                case 89://y
-                    if (e.ctrlKey) {
-                        keyboardCtrlYDown();
-                    }
-                    break;
-                case 90://z
-                    if(e.ctrlKey)
-                    {
-                        keyboardCtrlZDown();
-                    }
-                    break;
-                   
-                   
-                    
-                default:
-                    window.removeEventListener("keydown", keyDown, false);
-                    break
+                    default:
+                        document.removeEventListener("keydown", keyDown, false);
+                        break
+                }
             }
            
+            
             drawEverything();
+            
         }
       
         function keyboardRightDown() {
@@ -304,7 +310,7 @@
         function generateRoom() {
             //重新生成要清空everything
             everything = new Array();
-            everything.push(stage);
+           
 
             var width = $("#txtRoomWidth").val();
             var height = $("#txtRoomHeight").val();
@@ -321,32 +327,34 @@
             else {
                 height = 0;
             }
-
-            //创建一个toolBar
-            var toolBarPosition = new Position(0, 10);
-            var toolBarSize = new Size(50, height);
-            var toolBarMargin = 5;
-            toolBar = new ToolBar(toolBarPosition, toolBarSize, toolBarMargin);
-            everything.push(toolBar);
-
-            var roomX = stage.margin + toolBar.size.width;
-            var roomY = stage.margin;
-
+            
             var roomWidth = width;
             var roomHeight = height;
 
-            stage.size.width = roomWidth;
-            stage.size.height = roomHeight;
-            stage.position.x = roomX;
-            stage.position.y = roomY;
 
-            var canvasWidth = stage.margin * 2 + roomWidth + toolBar.size.width;
-            var canvasHeight = stage.margin * 2 + roomHeight;
+            var stagePadding = 10;
+            var stageWidth = roomWidth + 2 * stagePadding;
+            var stageHeight = roomHeight + 2 * stagePadding;
+            var stagePosition = new Position(70, 10);
+            var stageSize = new Size(stageWidth, stageHeight);
+            stage = new Stage(stagePosition, stageSize, stagePadding);
+            everything.push(stage);
+
+            //创建一个toolBar
+            var toolBarPadding = 10;
+            var toolBarPosition = new Position(10, 10);
+            var toolBarSize = new Size(50, stageHeight);
+            toolBar = new ToolBar(toolBarPosition, toolBarSize, toolBarPadding);
+            everything.push(toolBar);
+
+
+            var canvasWidth = stage.position.x + stage.size.width + 10;
+            var canvasHeight = stage.position.y + stage.size.height + 10;
 
             $(canvas).attr("width", canvasWidth);
             $(canvas).attr("height", canvasHeight);
              
-            var roomPosition = new Position(roomX, roomY);
+            var roomPosition = new Position(stage.position.x + stage.padding, stage.position.y + stage.padding);
             var roomSize = new Size(roomWidth, roomHeight);
 
             currentRoom = new Room(roomPosition, roomSize);
@@ -363,8 +371,8 @@
             toolBar.removeAllTool();
             
             toolIcon = {
-                width: toolBar.size.width - 2 * toolBar.margin,
-                height: toolBar.size.width - 2 * toolBar.margin,
+                width: toolBar.size.width - 2 * toolBar.padding,
+                height: toolBar.size.width - 2 * toolBar.padding,
             };
 
             var chairToolPosition = new Position(0, 0);
@@ -378,15 +386,15 @@
             toolBar.addTool(chairTool);
             toolBar.addTool(deskTool);
 
-            var toolX = toolBar.margin;
-            var toolY = stage.margin + toolBar.margin;
+            var toolX = toolBar.position.x+ toolBar.padding;
+            var toolY = toolBar.padding + toolBar.position.y;
 
 
             for (var i = 0; i < toolBar.tools.length; i++) {
                 toolBar.tools[i].moveTo(toolX, toolY);
                 everything.push(toolBar.tools[i]);
              
-                toolY += toolIcon.height + toolBar.margin;
+                toolY += toolIcon.height + toolBar.padding;
             }
 
         }
@@ -518,6 +526,10 @@
                    
 
                     stapArray.push(everything.clone());
+                    if (stapArray.length > 100)
+                    {//最多存储一百步步骤
+                        stapArray.shift();
+                    }
                     stapPointer = stapArray.length - 1;
                 }
                 
@@ -628,7 +640,15 @@
             </div>
         </div>
 
-     
+        <div>
+            <ul>
+                <li>设置RoomWidth、RoomHeight按Enter按钮即可生成对应大小的Room</li>
+                <li>直接拖拽ToolBar的Toll到Stage即可在Stage生成Tool</li>  
+                <li>选中Stage中的对象可设置对象的属性，拖拽对象可以移动对象，对象超出Stage范围会移除对象</li>
+                <li>选中Stage中的对象,使用键盘上的↑↓←→方向键可以进行位置微调</li>
+                <li>使用键盘Ctrl+z回到上一步操作，Ctrl+y回到下一步操作</li>
+            </ul>
+        </div>
 
         <div id="divImg">
             <img id="imgChair" src="~/Source/Chair.png" width="0" height="0" />
