@@ -9,7 +9,8 @@
     <meta name="viewport" content="width=device-width" />
     <title></title>
     <link href="~/Content/DesignRoom.css" rel="stylesheet" />
-    
+
+    <script src="~/Scripts/DesignRoom/GUID.js"></script>
     <script src="~/Scripts/jquery-1.10.2.min.js"></script>
     <script src="~/Scripts/DesignRoom/Extend.js"></script>
     <script src="~/Scripts/DesignRoom/BaseObject.js"></script>
@@ -31,7 +32,7 @@
         var currentRoom;
         var toolBar
         var stage;
-        //too尺寸
+        //tool尺寸
         var toolIcon
         //鼠标按下选中的工具
         var mouseDownTool;
@@ -170,7 +171,6 @@
             NextStap();
         }
 
-
         function mouseDown(ev) {
             var mousePosition = new MousePosition(ev);
             for (var i = everything.length - 1; i >= 0; i--) {//从数据后往前找选中的对象
@@ -186,12 +186,15 @@
                     if (tool.isContainPoint(mousePosition.position.x, mousePosition.position.y)) {//鼠标在toolIcon内
                         var position = new Position(0, 0);
                         var size = new Size(30, 30);
+                        
                         switch (tool.toolType) {
                             case Chair.name:
-                                mouseDownTool = new Chair(position, size, $("#imgChair")[0]);
+                                var count = calculateCount(Chair.name);
+                                mouseDownTool = new Chair(position, size, $("#imgChair")[0],Chair.name+count);
                                 break;
                             case Desk.name:
-                                mouseDownTool = new Desk(position, size, $("#imgDesk")[0]);
+                                var count = calculateCount(Desk.name);
+                                mouseDownTool = new Desk(position, size, $("#imgDesk")[0], Desk.name+count);
                                 break;
                         }
                         break;
@@ -292,8 +295,9 @@
 
         /*===========================================================================================================================*/
 
-        //Event Begin
+        //Common Begin
 
+        //加载
         function load() {
             refreshLoadPercent();
             if (sourceCount < totalSourceCount) {
@@ -307,6 +311,7 @@
             }
         }
 
+        //生产room
         function generateRoom() {
             //重新生成要清空everything
             everything = new Array();
@@ -367,6 +372,7 @@
             return false;
         }
 
+        //生成工具栏
         function generateTools() {
             toolBar.removeAllTool();
             
@@ -377,11 +383,11 @@
 
             var chairToolPosition = new Position(0, 0);
             var chairToolSize = new Size(toolIcon.width, toolIcon.height);
-            var chairTool = new Tool(chairToolPosition, chairToolSize, $("#imgChair")[0],Chair.name);
+            var chairTool = new Tool(chairToolPosition, chairToolSize, $("#imgChair")[0], Chair.name, Chair.name);
 
             var deskToolPosition = new Position(0, 0);
             var deskToolSize = new Size(toolIcon.width, toolIcon.height);
-            var deskTool = new Tool(deskToolPosition, deskToolSize, $("#imgDesk")[0],Desk.name);
+            var deskTool = new Tool(deskToolPosition, deskToolSize, $("#imgDesk")[0], Desk.name, Desk.name);
 
             toolBar.addTool(chairTool);
             toolBar.addTool(deskTool);
@@ -399,6 +405,7 @@
 
         }
 
+        //绘制所有东西
         function drawEverything()
         {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -427,6 +434,7 @@
             }
         }
 
+        //展示loading层
         function showLoading()
         {
             var screenHeight = document.body.offsetHeight;
@@ -437,15 +445,18 @@
 
         }
 
+        //隐藏loading层
         function hideLoading() {
             $("#divLoading").hide();
         }
 
+        //更新加载进度
         function refreshLoadPercent()
         {
             $("#divLoading").text("loading..."+ sourceCount/totalSourceCount*100 + "%");
         }
-
+        
+        //展示属性栏
         function showProperty()
         {
             if (currentCheckedObj != null && currentCheckedObj.type == Equipment.name) {
@@ -460,11 +471,15 @@
 
                 $("#txtSizeWidth").val(size.width);
                 $("#txtSizeHeight").val(size.height);
+                
+                $("#txtId").val(currentCheckedObj.id);
+                $("#txtDisplayName").val(currentCheckedObj.displayName);
 
                 $("#divProperty").show();
             }
         }
 
+        //隐藏属性栏
         function hideProperty()
         {
             $("#divProperty").hide();
@@ -481,7 +496,9 @@
 
                 var newSizeWidth = new Number($("#txtSizeWidth").val());
                 var newSizeHeight = new Number($("#txtSizeHeight").val());
-
+                
+                var id = $("#txtId").val();
+                var displayName = $("#txtDisplayName").val();
 
                 var equipment = new Equipment(new Position(newPositionX, newPositionY), new Size(newSizeWidth, newSizeHeight), null, null);
                 if (equipment.isInObj(currentRoom)) {//新的坐标在room内才生效
@@ -490,6 +507,8 @@
 
                     currentCheckedObj.size.width = newSizeWidth;
                     currentCheckedObj.size.height = newSizeHeight;
+                    currentCheckedObj.id = id;
+                    currentCheckedObj.displayName = displayName;
 
                     drawEverything();
                     showProperty();
@@ -537,6 +556,7 @@
            
         }
 
+        //记录当前步骤指针
         var stapPointer = 0;
 
         //后退一步
@@ -573,6 +593,7 @@
             }
         }
 
+        //前进一步后退一步重置当前对象
         function ResetCurrentObj()
         {
             currentRoom = everything[2];
@@ -598,7 +619,25 @@
             currentCheckedObj = null;
         }
 
-        //Event End
+        //计算设备数量
+        function calculateCount(equipmentType)
+        {
+            var count = 0;
+            for (var i = 0; i < everything.length; i++)
+            {
+                if (everything[i].type == Equipment.name)
+                {
+                    if (everything[i].equipmentType == equipmentType)
+                    {
+                        count++;
+                    }
+                }
+            }
+            
+            return count;
+        }
+
+        //Common End
         /*===========================================================================================================================*/
     </script>
 </head>
@@ -621,6 +660,13 @@
                     <div class="property-close" onclick="hideProperty()">×</div>
                 </div>
                 <div class="property-area">
+                    <div>Identity:</div>
+                    <div>
+                        <div><span>id:</span><input type="text" id="txtId" value="" /></div>
+                        <div><span>name:</span><input type="text" id="txtDisplayName" value="" /></div>
+                    </div>
+                </div>
+                <div class="property-area">
                     <div>Position:</div>
                     <div>
                         <div><span>x:</span><input type="text" id="txtPositionX" value="" />px</div>
@@ -634,6 +680,7 @@
                         <div><span>height:</span><input type="text"  id="txtSizeHeight" value="" />px</div>
                     </div>
                 </div>
+                
                 <div class="center" >
                     <input  type="button" value="Enter" onclick="return effectProperty()" />
                 </div>

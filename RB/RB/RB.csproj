@@ -191,6 +191,7 @@
     <Content Include="Scripts\DesignRoom\BaseObject.js" />
     <Content Include="Scripts\DesignRoom\Equipment.js" />
     <Content Include="Scripts\DesignRoom\Extend.js" />
+    <Content Include="Scripts\DesignRoom\GUID.js" />
     <Content Include="Scripts\DesignRoom\PropertyBar.js" />
     <Content Include="Scripts\DesignRoom\Room.js" />
     <Content Include="Scripts\DesignRoom\Stage.js" />

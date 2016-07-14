@@ -21,9 +21,10 @@ function Equipment(position, size, img, equipmentType) {
  * @param {Image} img 图片
  * @return {Chair} 椅子对象
  */
-function Chair(position, size, img) {
+function Chair(position, size, img,diaplayName) {
     Chair.name = "Chair";//兼容IE
     Equipment.apply(this, new Array(position, size, img, Chair.name));
+    this.displayName = diaplayName;
 }
 
 /**
@@ -34,7 +35,8 @@ function Chair(position, size, img) {
  * @param {Image} img 图片
  * @return {Desk} 桌子对象
  */
-function Desk(position, size, img) {
+function Desk(position, size, img, diaplayName) {
     Desk.name = "Desk";//兼容IE
     Equipment.apply(this, new Array(position, size, img, Desk.name));
+    this.displayName = diaplayName;
 }

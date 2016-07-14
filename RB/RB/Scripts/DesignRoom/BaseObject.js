@@ -7,6 +7,9 @@ function Size(width, height) {
     this.width = width;
     this.height = height;
 }
+
+var guid = new GUID();
+
 /**
  * 基类
  * @method BaseObject
@@ -20,6 +23,8 @@ function BaseObject(position, size, type) {
     this.size = size;
     this.type = type;
     this.subObjs = new Array();
+    this.id = guid.newGUID();
+    this.displayName="";
 
     this.addSubObj = addSubObj;
     this.removeSubObj = removeSubObj;
@@ -112,28 +117,32 @@ function drawObjName() {
         if (showObjType) {
             ctx.fillStyle = "blue";            
             ctx.textBaseline = 'top'
-            var txtLength = ctx.measureText(this.type).width;
-            var titleX=0;
-             var titleY=0;
+            var displayText = this.type;
+            if (this.displayName!="")
+            {
+                displayText = this.displayName
+            }
+
+            var txtLength = ctx.measureText(displayText).width;
+            var titleX = 0;
+            var titleY = 0;
             switch (this.type) {
                 case Equipment.name:
-                    titleX = this.position.x+this.size.width;
-                    titleY = this.position.y-11;
-                    ctx.fillText(this.type, titleX, titleY);
+                    titleX = this.position.x + this.size.width;
+                    titleY = this.position.y - 11;
                     break;
                 case Tool.name:
-                    titleX = this.position.x +(this.size.width -txtLength)/2;
-                    titleY = this.position.y+this.size.height -5;
+                    titleX = this.position.x + (this.size.width - txtLength) / 2;
+                    titleY = this.position.y + this.size.height - 5;
                     ctx.clearRect(titleX, titleY, txtLength, 10);
-                    ctx.fillText(this.type, titleX, titleY);
                     break;
                 default:
-                    titleX = this.position.x +this.size.width - txtLength-4;
+                    titleX = this.position.x + this.size.width - txtLength - 4;
                     titleY = this.position.y - 5;
-                    ctx.clearRect(titleX,titleY,txtLength,10);
-                    ctx.fillText(this.type, titleX, titleY);
+                    ctx.clearRect(titleX, titleY, txtLength, 10);
                     break;
             }
+            ctx.fillText(displayText, titleX, titleY);
            
         }
     }

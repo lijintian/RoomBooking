@@ -41,9 +41,10 @@ function removeAllTool() {
  * @param {String} toolType 工具类型
  * @return {Tool} 工具类对象
  */
-function Tool(position, size, toolImg, toolType) {
-    Tool.name = "Tool";
+function Tool(position, size, toolImg, toolType,displayName) {
+    Tool.name = "Tool";    
     BaseObject.apply(this, new Array(position, size, Tool.name));
+    this.displayName = displayName;
     this.img = toolImg;
     this.toolType = toolType;
 }
