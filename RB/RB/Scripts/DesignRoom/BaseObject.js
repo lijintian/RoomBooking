@@ -155,7 +155,7 @@ function moveObjTo(x, y) {
 
 function checkObj() {
     ctx.strokeStyle = "blue";
-    ctx.strokeRect(currentCheckedObj.position.x, currentCheckedObj.position.y, currentCheckedObj.size.width, currentCheckedObj.size.height);
+    ctx.strokeRect(this.position.x, this.position.y, this.size.width, this.size.height);
 }
 
 function moveUnit(xUnit, yUnit) {

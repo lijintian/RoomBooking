@@ -40,9 +40,13 @@
         var mouseDownEquipment;
         //当前选中对象
         var currentCheckedObj;
+        //当前多选工具
+        var currentMultiCheckTool;
+        
+        var currentMultiCheckObjs = new Array();
 
         var sourceCount = 0;
-        var totalSourceCount = 2;
+        var totalSourceCount = 4;
 
 
         
@@ -189,11 +193,11 @@
                         var size = new Size(30, 30);
                         
                         switch (tool.toolType) {
-                            case Chair.name:
+                            case ChairTool.name:
                                 var count = calculateCount(Chair.name);
                                 mouseDownTool = new Chair(position, size, $("#imgChair")[0],Chair.name+count);
                                 break;
-                            case Desk.name:
+                            case DeskTool.name:
                                 var count = calculateCount(Desk.name);
                                 mouseDownTool = new Desk(position, size, $("#imgDesk")[0], Desk.name+count);
                                 break;
@@ -219,6 +223,11 @@
 
             }
 
+            if (currentCheckedObj.type == Room.name)
+            {
+                currentMultiCheckTool = new MultiChoseTool(mousePosition.position, MultiChoseTool.name);
+            }
+
 
             //alert(mousePosition.position.x+"_"+mousePosition.position.y);
         }
@@ -241,14 +250,19 @@
             if (mouseDownTool != null || mouseDownEquipment != null) {
                 canvas.style.cursor = "pointer";
             }
-
-
+            
+            if (currentCheckedObj!=null&&currentCheckedObj.type == Room.name){
+                if (currentMultiCheckTool != null && !currentMultiCheckTool.isMouseUp) {
+                    currentMultiCheckTool.setEndPosition(mousePosition.position);
+                }
+            }
+            
             drawEverything();
         }
 
         function mouseUp(ev) {
             var mousePosition = new MousePosition(ev);
-
+            
             if (mouseDownTool != null) {
                 if (mouseDownTool.isInObj(currentRoom)
                     ) {//当前鼠标选中对象在Room对象内
@@ -267,6 +281,7 @@
                 mouseDownTool = null;
 
             }
+
             if (mouseDownEquipment != null) {
                 if (!mouseDownEquipment.isInObj(currentRoom)) {
                     var indexInEveryThing = everything.indexOf(mouseDownEquipment);
@@ -287,6 +302,20 @@
                 canvas.style.cursor = "default";
             }
 
+            if (currentCheckedObj != null && currentCheckedObj.type == Room.name) {
+                if (currentMultiCheckTool != null)
+                {
+                    currentMultiCheckTool.setEndPosition(mousePosition.position);
+                    GetCurrentMultiCheckObjs();
+                   
+
+                    currentMultiCheckTool.isMouseUp = true;
+
+                    if (currentMultiCheckObjs.length == 0) {
+                        currentMultiCheckTool = null;
+                    }
+                }
+            }
             drawEverything();
 
             RecordStap()
@@ -384,11 +413,11 @@
 
             var chairToolPosition = new Position(0, 0);
             var chairToolSize = new Size(toolIcon.width, toolIcon.height);
-            var chairTool = new Tool(chairToolPosition, chairToolSize, $("#imgChair")[0], Chair.name, Chair.name);
+            var chairTool = new ChairTool(chairToolPosition, chairToolSize, $("#imgChair")[0], Chair.name);
 
             var deskToolPosition = new Position(0, 0);
             var deskToolSize = new Size(toolIcon.width, toolIcon.height);
-            var deskTool = new Tool(deskToolPosition, deskToolSize, $("#imgDesk")[0], Desk.name, Desk.name);
+            var deskTool = new DeskTool(deskToolPosition, deskToolSize, $("#imgDesk")[0], Desk.name);
 
             toolBar.addTool(chairTool);
             toolBar.addTool(deskTool);
@@ -433,6 +462,20 @@
             {
                 mouseDownTool.draw();
             }
+            
+            if (currentMultiCheckTool != null) {
+                currentMultiCheckTool.draw();
+                if (currentMultiCheckObjs.length > 0) {
+                    for (var i = 0; i < currentMultiCheckObjs.length; i++) {
+                        showMultiEditBar();
+                        currentMultiCheckObjs[i].check();
+                    }
+                }
+            }
+            else {
+                hideMultiEditBar();
+            }
+
         }
 
         //展示loading层
@@ -638,6 +681,122 @@
             return count;
         }
 
+        //获取多选框选中的对象
+        function GetCurrentMultiCheckObjs()
+        {
+            currentMultiCheckObjs = new Array();
+            for (var i = 0; i < everything.length; i++)
+            {
+                if (everything[i].type == Equipment.name)
+                {
+                    if (everything[i].isInObj(currentMultiCheckTool))
+                    {//在多选工具内
+                        currentMultiCheckObjs.push(everything[i]);
+                    }
+                }
+            }
+        }
+
+        //展示多选编辑栏
+        function showMultiEditBar() {
+            if (currentMultiCheckObjs != null && currentMultiCheckObjs.length>0) {
+                var position = currentMultiCheckTool.position;
+                var size = currentMultiCheckTool.size;
+
+                $("#divMultiTool").css("left", position.x + size.width + canvas.offsetLeft);
+                $("#divMultiTool").css("top", position.y + size.height + canvas.offsetTop);
+                
+                if (currentMultiCheckObjs.isSameSize()) {
+                    $("#txtMultiSizeWidth").val(currentMultiCheckObjs[0].size.width);
+                    $("#txtMultiSizeHeight").val(currentMultiCheckObjs[0].size.height);
+                }
+                else {
+                    $("#txtMultiSizeWidth").val("0");
+                    $("#txtMultiSizeHeight").val("0");
+                }
+                if (currentMultiCheckObjs.isSameName()) {
+                    $("#txtMultiDisplayName").val(currentMultiCheckObjs[0].displayName);
+                }
+                else {
+                    $("#txtMultiDisplayName").val("");
+                }
+
+                
+
+                $("#divMultiTool").show();
+            }
+        }
+
+        //隐藏多选编辑栏
+        function hideMultiEditBar() {
+            $("#divMultiTool").hide();
+            currentMultiCheckTool = null;
+            currentMultiCheckObjs = new Array();
+        }
+
+        //生效多选编辑栏
+        function effectMultiEdit() {
+            if (currentMultiCheckObjs != null && currentMultiCheckObjs.length > 0) {
+                  
+                
+                var newSizeWidth = new Number($("#txtMultiSizeWidth").val());
+                var newSizeHeight = new Number($("#txtMultiSizeHeight").val());
+
+                var displayName = $("#txtMultiDisplayName").val();
+
+              
+               
+              
+                for (var i = 0; i < currentMultiCheckObjs.length; i++)
+                {
+                    var obj = currentMultiCheckObjs[i];
+                    if (newSizeWidth != 0 && newSizeHeight != 0) {
+                        obj.size.width = newSizeWidth;
+                        obj.size.height = newSizeHeight;
+                    }
+                   
+                    if (displayName.trim() != null)
+                    {
+                        obj.displayName = displayName;
+                    }
+                }
+                drawEverything();
+                showMultiEditBar();
+                RecordStap();
+            }
+            return false;
+        }
+
+        //多个对齐
+        function multiAlign(direct) {
+            if (currentMultiCheckObjs != null && currentMultiCheckObjs.length > 0) {
+                switch (direct)
+                {
+                    case "top":
+                        currentMultiCheckObjs.alignTop();
+                        break;
+                    case "buttom":
+                        currentMultiCheckObjs.alignButtom();
+                        break;
+                    case "left":
+                        currentMultiCheckObjs.alignLeft();
+                        break;
+                    case "right":
+                        currentMultiCheckObjs.alignRight();
+                        break;
+                }
+               
+                drawEverything();
+                showMultiEditBar();
+                RecordStap();
+            }
+            return false;
+        }
+
+      
+        
+        
+
         //Common End
         /*===========================================================================================================================*/
 
@@ -688,6 +847,35 @@
                     <input  type="button" value="Enter" onclick="return effectProperty()" />
                 </div>
             </div>
+
+            <div id="divMultiTool" class="property">
+                <div class="property-title">
+                    <div class="property-close" onclick="hideMultiEditBar()">×</div>
+                </div>
+                <div>
+                    <div onclick="multiAlign('top')" class="alignIcon" style="background-image: url('../../Source/topAlign.png');" title="Top Align"></div>
+                    <div  onclick="multiAlign('buttom')" class="alignIcon" style="background-image: url('../../Source/buttomAlign.png');" title="Buttom Align"></div>
+                    <div  onclick="multiAlign('left')" class="alignIcon" style=" background-image: url('../../Source/leftAlign.png');" title="Left Align"></div>
+                    <div  onclick="multiAlign('right')" class="alignIcon" style="background-image: url('../../Source/rightAlign.png');" title="Right Align"></div> 
+                </div>
+                <div class="property-area">
+                    <div>Identity:</div>
+                    <div>
+                        <div><span>name:</span><input type="text" id="txtMultiDisplayName" value="" /></div>
+                    </div>
+                </div>
+                <div class="property-area">
+                    <div>Size:</div>
+                    <div>
+                        <div><span>width:</span><input type="text" id="txtMultiSizeWidth" value="0" />px</div>
+                        <div><span>height:</span><input type="text" id="txtMultiSizeHeight" value="0" />px</div>
+                    </div>
+                </div>
+
+                <div class="center">
+                    <input type="button" value="Enter" onclick="return effectMultiEdit()" />
+                </div>
+            </div>
         </div>
         <div>
             keyboard op:
@@ -712,6 +900,10 @@
         <div id="divImg">
             <img id="imgChair" src="~/Source/Chair.png" width="0" height="0" />
             <img id="imgDesk" src="~/Source/Desk.png" width="0" height="0" />
+            <img src="~/Source/buttomAlign.png" width="0" height="0"/>
+            <img src="~/Source/leftAlign.png" width="0" height="0"/>
+            <img src="~/Source/rightAlign.png" width="0" height="0"/>
+            <img src="~/Source/topAlign.png" width="0" height="0"/>
             <script>
                 $("img").each(function () {
                     this.onload = function () {
