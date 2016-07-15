@@ -19,4 +19,5 @@
 * drag the mouse to choice multi objects，click the align tool to align，change the property and click Enter button to change all the choosed objects property
  * (拖动个鼠标选中多个对象，点击对齐工具对齐，修改属性后按Enter键来修改所有选中对象的属性)
 
+###todo:multi edit support average the objects distance (对选支持平均间距)
 ###todo:drag and resize the object (拖动ReSize工具改变对象大小)
