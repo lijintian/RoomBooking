@@ -16,5 +16,7 @@
 
 ##Room Design Tool New Features : Multi Edit
 ![MultiEdit](https://github.com/lijintian/RoomBooking/blob/master/RB/RB/Source/Introduce/DesignRoomMultiEdit.gif)
+* drag the mouse to choice multi objects，click the align tool to align，change the property and click Enter button to change all the choosed objects property
+ * (拖动个鼠标选中多个对象，点击对齐工具对齐，修改属性后按Enter键来修改所有选中对象的属性)
 
-\\\\todo:drag and resize the object (拖动ReSize工具改变对象大小)
+###todo:drag and resize the object (拖动ReSize工具改变对象大小)
