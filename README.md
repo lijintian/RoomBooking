@@ -1,2 +1,2 @@
 # RoomBooking
-![image](https://github.com/lijintian/RoomBooking/tree/master/RB/RB/Source/Introduce/CreateEquipmentInRoom.gif "创建设备") 
+![CreateEquipment](https://github.com/lijintian/RoomBooking/blob/master/RB/RB/Source/Introduce/CreateEquipmentInRoom.gif) 
