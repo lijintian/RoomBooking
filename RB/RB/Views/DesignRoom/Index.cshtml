@@ -111,10 +111,7 @@
                         document.removeEventListener("keydown", keyDown, false);
                         break
                 }
-            }
-           
-            
-            drawEverything();
+            }           
             
         }
       
@@ -126,6 +123,7 @@
                 currentCheckedObj.moveUnit(mouveUnit, 0);
                 showProperty();
                 RecordStap();
+                drawEverything();
             }
         }
 
@@ -137,6 +135,7 @@
                 currentCheckedObj.moveUnit(0, mouveUnit);
                 showProperty();
                 RecordStap();
+                drawEverything();
             }
         }
 
@@ -148,6 +147,7 @@
                 currentCheckedObj.moveUnit(mouveUnit,0);
                 showProperty();
                 RecordStap();
+                drawEverything();
             }
         }
 
@@ -159,6 +159,7 @@
                 currentCheckedObj.moveUnit(0, mouveUnit);
                 showProperty();
                 RecordStap();
+                drawEverything();
             }
         }
 
@@ -687,6 +688,15 @@
                     <input  type="button" value="Enter" onclick="return effectProperty()" />
                 </div>
             </div>
+        </div>
+        <div>
+            keyboard op:
+            <input type="button" value="Ctrl+z" onclick="PreStap()" />
+            <input type="button" value="Ctrl+y" onclick="NextStap()" />
+            <input type="button" value="←" onclick="keyboardLeftDown()" />
+            <input type="button" value="↑" onclick="keyboardTopDown()" />
+            <input type="button" value="→" onclick="keyboardRightDown()" />
+            <input type="button" value="↓" onclick="keyboardButtomDown()" />
         </div>
 
         <div>
