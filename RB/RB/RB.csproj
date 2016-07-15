@@ -211,6 +211,7 @@
     <Content Include="Source\Desk.png" />
     <Content Include="Source\buttomAlign.png" />
     <Content Include="Source\Introduce\DesignRoom.gif" />
+    <Content Include="Source\Introduce\DesignRoomMultiEdit.gif" />
     <Content Include="Source\leftAlign.png" />
     <Content Include="Source\rightAlign.png" />
     <Content Include="Source\topAlign.png" />
