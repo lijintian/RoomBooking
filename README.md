@@ -1,5 +1,5 @@
 # RoomBooking
-##Design Room Tool
+##Room Design Tool
 ![DesignRoom](https://github.com/lijintian/RoomBooking/blob/master/RB/RB/Source/Introduce/DesignRoom.gif) 
 * this tool base on canvas,no need flash or other 3rd plugins 
  * (此设计工具使用canvas开发，无需安装flash及第三方插件)
@@ -14,5 +14,7 @@
 * ues keboard Ctrl+z to go to last step or Ctrl+y to go to next step
  * (使用键盘Ctrl+z回到上一步操作，Ctrl+y回到下一步操作)
 
-\\\\todo:multi choise and align (多选对齐功能)
+##Room Design Tool New Features : Multi Edit
+![MultiEdit](https://github.com/lijintian/RoomBooking/blob/master/RB/RB/Source/Introduce/DesignRoomMultiEdit.gif)
+
 \\\\todo:drag and resize the object (拖动ReSize工具改变对象大小)
