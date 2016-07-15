@@ -207,9 +207,9 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
-    <Content Include="Source\7f94d181a8b32db2bc732fb937d7344e.jpg" />
     <Content Include="Source\Chair.png" />
     <Content Include="Source\Desk.png" />
+    <Content Include="Source\Introduce\CreateEquipmentInRoom.gif" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
