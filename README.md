@@ -14,5 +14,5 @@
 * ues keboard Ctrl+z to go to last step or Ctrl+y to go to next step
  * (使用键盘Ctrl+z回到上一步操作，Ctrl+y回到下一步操作)
 
-* todo:multi choise and align 多选对齐功能
-* todo:drag and resize the object 拖动ReSize工具改变对象大小
+\\\\todo:multi choise and align (多选对齐功能)
+\\\\todo:drag and resize the object (拖动ReSize工具改变对象大小)
