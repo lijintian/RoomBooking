@@ -1,6 +1,13 @@
-﻿function Position(x, y) {
+﻿function Position(x, y,z) {
     this.x = x;
     this.y = y;
+    if (typeof z == "undefined") {
+        this.z = 0;
+    }
+    else {
+        this.z = z;
+    }
+   
 }
 
 function Size(width, height) {

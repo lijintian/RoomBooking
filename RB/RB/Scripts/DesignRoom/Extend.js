@@ -12,8 +12,11 @@ Array.prototype.findMostLeft = findMostLeft;
 Array.prototype.findMostRight = findMostRight;
 Array.prototype.sortByPositionX = sortByPositionX;
 Array.prototype.sortByPositionY = sortByPositionY;
+Array.prototype.sortByPositionZ = sortByPositionZ;
 Array.prototype.horizonAverage = horizonAverage;
 Array.prototype.verticalAverage = verticalAverage;
+Array.prototype.removeElement = removeElement;
+
 
 /*
 @method 判断亮哥数组是否相同(position,size相同及认为相同)
@@ -266,8 +269,26 @@ function sortByPositionY() {
     }
 }
 
+/*
+@method 根据position.z进行排序
+*/
+function sortByPositionZ()
+{
+    //冒泡
+    for (var i = 0; i < this.length; i++) {
+        for (var j = i; j < this.length; j++) {
+            if (this[i].position.z > this[j].position.z) {
+                var temp = this[j];
+                this[j] = this[i];
+                this[i] = temp;
+            }
+        }
+    }
+}
 
-//横向平均
+/*
+@method 横向平均
+*/
 function horizonAverage()
 {
     var leftX = this.findMostLeft();
@@ -285,7 +306,9 @@ function horizonAverage()
     }
 }
 
-//纵向平均
+/*
+@method 纵向平均
+*/
 function verticalAverage()
 {
     var topY = this.findMostTop();
@@ -302,3 +325,13 @@ function verticalAverage()
     }
 }
 
+/*
+@移除数组中某个对象
+*/
+function removeElement(element)
+{
+    var indexInArray = this.indexOf(element);
+    if (indexInArray >= 0) {
+        this.splice(indexInArray, 1);
+    }
+}

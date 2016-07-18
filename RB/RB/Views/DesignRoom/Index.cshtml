@@ -120,64 +120,115 @@
         }
       
         function keyboardRightDown() {
-            if (currentCheckedObj !== null && currentCheckedObj.type == Equipment.name) {
-                var mouveUnit = 1;
-                currentCheckedObj.moveUnit(mouveUnit, 0);
-                mouveUnit=currentCheckedObj.isInObj(currentRoom) ? 0 : -1;
-                currentCheckedObj.moveUnit(mouveUnit, 0);
-                showProperty();
-                RecordStap();
-                drawEverything();
+            if (currentCheckedObj != null) {
+                switch (currentCheckedObj.type) {
+                    case Tool.name:
+                      
+                        break;
+                    case Equipment.name:
+                        var mouveUnit = 1;
+                        currentCheckedObj.moveUnit(mouveUnit, 0);
+                        mouveUnit = currentCheckedObj.isInObj(currentRoom) ? 0 : -1;
+                        currentCheckedObj.moveUnit(mouveUnit, 0);
+                        showProperty();
+                        RecordStap();
+                        drawEverything();
+                        break;
+                    case Room.name:
+                      
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 
         function keyboardTopDown() {
-            if (currentCheckedObj !== null && currentCheckedObj.type == Equipment.name) {
-                var mouveUnit = -1;
-                currentCheckedObj.moveUnit(0, mouveUnit);
-                mouveUnit = currentCheckedObj.isInObj(currentRoom) ? 0 : 1;
-                currentCheckedObj.moveUnit(0, mouveUnit);
-                showProperty();
-                RecordStap();
-                drawEverything();
+
+            if (currentCheckedObj != null) {
+                switch (currentCheckedObj.type) {
+                    case Tool.name:
+
+                        break;
+                    case Equipment.name:
+                        var mouveUnit = -1;
+                        currentCheckedObj.moveUnit(0, mouveUnit);
+                        mouveUnit = currentCheckedObj.isInObj(currentRoom) ? 0 : 1;
+                        currentCheckedObj.moveUnit(0, mouveUnit);
+                        showProperty();
+                        RecordStap();
+                        drawEverything();
+                        break;
+                    case Room.name:
+
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 
         function keyboardLeftDown() {
-            if (currentCheckedObj !== null && currentCheckedObj.type == Equipment.name) {
-                var mouveUnit = -1;
-                currentCheckedObj.moveUnit(mouveUnit,0);
-                mouveUnit = currentCheckedObj.isInObj(currentRoom) ? 0 : 1;
-                currentCheckedObj.moveUnit(mouveUnit,0);
-                showProperty();
-                RecordStap();
-                drawEverything();
+            if (currentCheckedObj != null) {
+                switch (currentCheckedObj.type) {
+                    case Tool.name:
+
+                        break;
+                    case Equipment.name:
+                        var mouveUnit = -1;
+                        currentCheckedObj.moveUnit(mouveUnit, 0);
+                        mouveUnit = currentCheckedObj.isInObj(currentRoom) ? 0 : 1;
+                        currentCheckedObj.moveUnit(mouveUnit, 0);
+                        showProperty();
+                        RecordStap();
+                        drawEverything();
+                        break;
+                    case Room.name:
+
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 
         function keyboardButtomDown() {
-            if (currentCheckedObj !== null && currentCheckedObj.type == Equipment.name) {
-                var mouveUnit = 1;
-                currentCheckedObj.moveUnit(0, mouveUnit);
-                mouveUnit = currentCheckedObj.isInObj(currentRoom) ? 0 : -1;
-                currentCheckedObj.moveUnit(0, mouveUnit);
-                showProperty();
-                RecordStap();
-                drawEverything();
+            if (currentCheckedObj != null) {
+                switch (currentCheckedObj.type) {
+                    case Tool.name:
+
+                        break;
+                    case Equipment.name:
+                        var mouveUnit = 1;
+                        currentCheckedObj.moveUnit(0, mouveUnit);
+                        mouveUnit = currentCheckedObj.isInObj(currentRoom) ? 0 : -1;
+                        currentCheckedObj.moveUnit(0, mouveUnit);
+                        showProperty();
+                        RecordStap();
+                        drawEverything();
+                        break;
+                    case Room.name:
+
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 
         function keyboardCtrlZDown()
         {
-            PreStap();
+            preStap();
         }
 
         function keyboardCtrlYDown() {
-            NextStap();
+            nextStap();
         }
 
         function mouseDown(ev) {
             var mousePosition = new MousePosition(ev);
+
+            everything.sortByPositionZ();//z值高的总在数组后边
             for (var i = everything.length - 1; i >= 0; i--) {//从数据后往前找选中的对象
                 if (everything[i].isContainPoint(mousePosition.position.x, mousePosition.position.y)) {
                     currentCheckedObj = everything[i];
@@ -185,75 +236,64 @@
                 }
             }
 
-            if (toolBar.isContainPoint(mousePosition.position.x, mousePosition.position.y)) {//鼠标在toolBar内
-                for (var i = 0; i < toolBar.tools.length; i++) {
-                    var tool = toolBar.tools[i];
-                    if (tool.isContainPoint(mousePosition.position.x, mousePosition.position.y)) {//鼠标在toolIcon内
-                        var position = new Position(0, 0);
-                        var size = new Size(30, 30);
-                        
-                        switch (tool.toolType) {
-                            case ChairTool.name:
-                                var count = calculateCount(Chair.name);
-                                mouseDownTool = new Chair(position, size, $("#imgChair")[0],Chair.name+count);
-                                break;
-                            case DeskTool.name:
-                                var count = calculateCount(Desk.name);
-                                mouseDownTool = new Desk(position, size, $("#imgDesk")[0], Desk.name+count);
-                                break;
-                        }
-                        break;
-                    }
-                }
-            }
-            else if (stage.isContainPoint(mousePosition.position.x, mousePosition.position.y)) {//鼠标在stage内
-
-                for (var i = 0; i < currentRoom.equipments.length; i++) {
-                    var equipment = currentRoom.equipments[i];
-
-                    if (equipment.isContainPoint(mousePosition.position.x, mousePosition.position.y)) {//鼠标在equipment内
-                        mouseDownEquipment = equipment;
-                        showProperty();
-                        break;
-                    }
-                }
-            }
-            if (mouseDownTool != null || mouseDownEquipment != null) {
-                canvas.style.cursor = "pointer";
-
-            }
-
-            if (currentCheckedObj.type == Room.name)
+            switch (currentCheckedObj.type)
             {
-                currentMultiCheckTool = new MultiChoseTool(mousePosition.position, MultiChoseTool.name);
+                case Tool.name:
+                    var position = new Position(0, 0, 0);
+                    var size = new Size(30, 30);
+
+                    switch (currentCheckedObj.toolType) {
+                        case ChairTool.name:
+                            var count = calculateCount(Chair.name);
+                            mouseDownTool = new Chair(position, size, $("#imgChair")[0], Chair.name + count);
+                            break;
+                        case DeskTool.name:
+                            var count = calculateCount(Desk.name);
+                            mouseDownTool = new Desk(position, size, $("#imgDesk")[0], Desk.name + count);
+                            break;
+                        default:
+                            break;
+                    }
+                    canvas.style.cursor = "pointer";
+                    break;
+                case Equipment.name:
+                    mouseDownEquipment = currentCheckedObj;
+                    showProperty();
+                    canvas.style.cursor = "pointer";
+                    break;
+                case Room.name:
+                    currentMultiCheckTool = new MultiChoseTool(mousePosition.position, MultiChoseTool.name);
+                    break;
+                default:
+                    break;
             }
-
-
-            //alert(mousePosition.position.x+"_"+mousePosition.position.y);
         }
 
         function mouseMove(ev) {
             var mousePosition = new MousePosition(ev);
 
-            if (mouseDownTool != null) {
-                if (mouseDownTool.type == Equipment.name) {
-                    mouseDownTool.moveTo(mousePosition.position.x - mouseDownTool.size.width / 2, mousePosition.position.y - mouseDownTool.size.height / 2);
-                }
-            }
-            if (mouseDownEquipment != null) {//选中了房间内的设备移动
-                if (mouseDownEquipment.type == Equipment.name) {
-                    mouseDownEquipment.moveTo(mousePosition.position.x - mouseDownEquipment.size.width / 2, mousePosition.position.y - mouseDownEquipment.size.height / 2);
-                    showProperty();
-                }
-            }
-
-            if (mouseDownTool != null || mouseDownEquipment != null) {
-                canvas.style.cursor = "pointer";
-            }
-            
-            if (currentCheckedObj!=null&&currentCheckedObj.type == Room.name){
-                if (currentMultiCheckTool != null && !currentMultiCheckTool.isMouseUp) {
-                    currentMultiCheckTool.setEndPosition(mousePosition.position);
+            if (currentCheckedObj != null) {
+                switch (currentCheckedObj.type) {
+                    case Tool.name:
+                        if (mouseDownTool != null)
+                        {
+                            mouseDownTool.moveTo(mousePosition.position.x - mouseDownTool.size.width / 2, mousePosition.position.y - mouseDownTool.size.height / 2);
+                        }
+                        break;
+                    case Equipment.name:
+                        if (mouseDownEquipment != null)
+                        {
+                            mouseDownEquipment.moveTo(mousePosition.position.x - mouseDownEquipment.size.width / 2, mousePosition.position.y - mouseDownEquipment.size.height / 2);
+                            showProperty();
+                        }
+                        break;
+                    case Room.name:
+                        if (currentMultiCheckTool != null && !currentMultiCheckTool.isMouseUp) {
+                            currentMultiCheckTool.setEndPosition(mousePosition.position);
+                        }
+                        break;
+                    default:
+                        break;
                 }
             }
             
@@ -262,62 +302,54 @@
 
         function mouseUp(ev) {
             var mousePosition = new MousePosition(ev);
-            
-            if (mouseDownTool != null) {
-                if (mouseDownTool.isInObj(currentRoom)
-                    ) {//当前鼠标选中对象在Room对象内
-                    var newObj = mouseDownTool;
 
-                    if (everything.indexOf(newObj) < 0) {//不存在时才添加
-                        everything.push(newObj);
-                    }
+            if (currentCheckedObj != null) {
+                switch (currentCheckedObj.type) {
+                    case Tool.name:
+                        if (mouseDownTool != null) {
+                            if (mouseDownTool.isInObj(currentRoom)) {//当前鼠标选中对象在Room对象内
+                                var newObj = mouseDownTool;
 
-                    if (newObj.type == Equipment.name) {//如果是设备
-                        currentRoom.addEquipment(newObj);
-                    }
+                                if (everything.indexOf(newObj) < 0) {//不存在时才添加
+                                    everything.push(newObj);
+                                }
 
+                                if (newObj.type == Equipment.name) {//如果是设备
+                                    currentRoom.addEquipment(newObj);
+                                }
+                            }
+                            mouseDownTool = null;
+                        }
+                        break;
+                    case Equipment.name:
+                        if (mouseDownEquipment != null) {
+                            if (!mouseDownEquipment.isInObj(currentRoom)) {//移除了room
+                                everything.removeElement(mouseDownEquipment);
+                                currentRoom.removeEquipment(mouseDownEquipment);
+                                hideProperty();
+                                currentCheckedObj = null;
+                            }
+                            mouseDownEquipment = null;
+                        }
+                        break;
+                    case Room.name:
+                        if (currentMultiCheckTool != null) {
+                            currentMultiCheckTool.setEndPosition(mousePosition.position);
+                            GetCurrentMultiCheckObjs();
+                            currentMultiCheckTool.isMouseUp = true;
 
-                }
-                mouseDownTool = null;
-
-            }
-
-            if (mouseDownEquipment != null) {
-                if (!mouseDownEquipment.isInObj(currentRoom)) {
-                    var indexInEveryThing = everything.indexOf(mouseDownEquipment);
-                    if (indexInEveryThing >= 0) {//不存在时才添加
-                        everything.splice(indexInEveryThing, 1);
-                    }
-
-                    if (mouseDownEquipment.type == Equipment.name) {//如果是设备
-                        currentRoom.removeEquipment(mouseDownEquipment);
-                        hideProperty();
-                    }
-                    currentCheckedObj = null;
-                }
-                mouseDownEquipment = null;
-            }
-
-            if (mouseDownTool == null && mouseDownEquipment == null) {
-                canvas.style.cursor = "default";
-            }
-
-            if (currentCheckedObj != null && currentCheckedObj.type == Room.name) {
-                if (currentMultiCheckTool != null)
-                {
-                    currentMultiCheckTool.setEndPosition(mousePosition.position);
-                    GetCurrentMultiCheckObjs();
-                   
-
-                    currentMultiCheckTool.isMouseUp = true;
-
-                    if (currentMultiCheckObjs.length == 0) {
-                        currentMultiCheckTool = null;
-                    }
+                            if (currentMultiCheckObjs.length == 0) {
+                                currentMultiCheckTool = null;
+                            }
+                        }
+                        canvas.style.cursor = "default";
+                        break;
+                    default:
+                        break;
                 }
             }
+             
             drawEverything();
-
             RecordStap()
         }
 
@@ -503,24 +535,38 @@
         //展示属性栏
         function showProperty()
         {
-            if (currentCheckedObj != null && currentCheckedObj.type == Equipment.name) {
-                var position = currentCheckedObj.position;
-                var size = currentCheckedObj.size;
+            if (currentCheckedObj != null)
+            {
+                switch (currentCheckedObj.type) {
+                    case Tool.name:
 
-                $("#divProperty").css("left", position.x + size.width+canvas.offsetLeft);
-                $("#divProperty").css("top", position.y + size.height+canvas.offsetTop);
+                        break;
+                    case Equipment.name:
+                        var position = currentCheckedObj.position;
+                        var size = currentCheckedObj.size;
 
-                $("#txtPositionX").val(position.x - stage.position.x);
-                $("#txtPositionY").val(position.y - stage.position.y);
+                        $("#divProperty").css("left", position.x + size.width + canvas.offsetLeft);
+                        $("#divProperty").css("top", position.y + size.height + canvas.offsetTop);
 
-                $("#txtSizeWidth").val(size.width);
-                $("#txtSizeHeight").val(size.height);
-                
-                $("#txtId").val(currentCheckedObj.id);
-                $("#txtDisplayName").val(currentCheckedObj.displayName);
+                        $("#txtPositionX").val(position.x - currentRoom.position.x);
+                        $("#txtPositionY").val(position.y - currentRoom.position.y);
 
-                $("#divProperty").show();
+                        $("#txtSizeWidth").val(size.width);
+                        $("#txtSizeHeight").val(size.height);
+
+                        $("#txtId").val(currentCheckedObj.id);
+                        $("#txtDisplayName").val(currentCheckedObj.displayName);
+
+                        $("#divProperty").show();
+                        break;
+                    case Room.name:
+
+                        break;
+                    default:
+                        break;
+                }
             }
+          
         }
 
         //隐藏属性栏
@@ -532,39 +578,47 @@
         //生效属性
         function effectProperty()
         {
-            if (currentCheckedObj != null&&currentCheckedObj.type==Equipment.name)
-            {
+            if (currentCheckedObj != null) {
+                switch (currentCheckedObj.type) {
+                    case Tool.name:
 
-                var newPositionX = new Number($("#txtPositionX").val()) + stage.position.x;
-                var newPositionY = new Number($("#txtPositionY").val()) + stage.position.y;
+                        break;
+                    case Equipment.name:
+                        var newPositionX = new Number($("#txtPositionX").val()) + currentRoom.position.x;
+                        var newPositionY = new Number($("#txtPositionY").val()) + currentRoom.position.y;
 
-                var newSizeWidth = new Number($("#txtSizeWidth").val());
-                var newSizeHeight = new Number($("#txtSizeHeight").val());
-                
-                var id = $("#txtId").val();
-                var displayName = $("#txtDisplayName").val();
+                        var newSizeWidth = new Number($("#txtSizeWidth").val());
+                        var newSizeHeight = new Number($("#txtSizeHeight").val());
 
-                var equipment = new Equipment(new Position(newPositionX, newPositionY), new Size(newSizeWidth, newSizeHeight), null, null);
-                if (equipment.isInObj(currentRoom)) {//新的坐标在room内才生效
-                    currentCheckedObj.position.x = newPositionX;
-                    currentCheckedObj.position.y = newPositionY;
+                        var id = $("#txtId").val();
+                        var displayName = $("#txtDisplayName").val();
 
-                    currentCheckedObj.size.width = newSizeWidth;
-                    currentCheckedObj.size.height = newSizeHeight;
-                    currentCheckedObj.id = id;
-                    currentCheckedObj.displayName = displayName;
+                        var equipment = new Equipment(new Position(newPositionX, newPositionY), new Size(newSizeWidth, newSizeHeight), null, null);
+                        if (equipment.isInObj(currentRoom)) {//新的坐标在room内才生效
+                            currentCheckedObj.position.x = newPositionX;
+                            currentCheckedObj.position.y = newPositionY;
 
-                    drawEverything();
-                    showProperty();
+                            currentCheckedObj.size.width = newSizeWidth;
+                            currentCheckedObj.size.height = newSizeHeight;
+                            currentCheckedObj.id = id;
+                            currentCheckedObj.displayName = displayName;
 
-                    RecordStap();
+                            drawEverything();
+                            showProperty();
 
+                            RecordStap();
+
+                        }
+                        else {
+                            alert("位置尺寸信息超出范围,请重新填写");
+                        }
+                        break;
+                    case Room.name:
+
+                        break;
+                    default:
+                        break;
                 }
-                else {
-                    alert("位置尺寸信息超出范围,请重新填写");
-                }
-
-              
             }
             return false;
         }
@@ -604,14 +658,14 @@
         var stapPointer = 0;
 
         //后退一步
-        function PreStap()
+        function preStap()
         {
             stapPointer--;
 
             if (stapPointer >= 0) {
                 everything = stapArray[stapPointer].clone();
                 
-                ResetCurrentObj();
+                resetCurrentObj();
                
                 drawEverything();
             }
@@ -621,14 +675,14 @@
         }
         
         //前进一步
-        function NextStap()
+        function nextStap()
         {
             stapPointer++;
 
             if (stapPointer < stapArray.length) {
                 everything = stapArray[stapPointer].clone();
                 
-                ResetCurrentObj();
+                resetCurrentObj();
 
                 drawEverything();
             }
@@ -638,7 +692,7 @@
         }
 
         //前进一步后退一步重置当前对象
-        function ResetCurrentObj()
+        function resetCurrentObj()
         {
             currentRoom = everything[2];
 
@@ -797,6 +851,7 @@
             return false;
         }
 
+        //多个间距相同
         function multiAverage(averageType)
         {
             if (currentMultiCheckObjs != null && currentMultiCheckObjs.length > 0) {
@@ -902,8 +957,8 @@
         </div>
         <div>
             keyboard op:
-            <input type="button" value="Ctrl+z" onclick="PreStap()" />
-            <input type="button" value="Ctrl+y" onclick="NextStap()" />
+            <input type="button" value="Ctrl+z" onclick="preStap()" />
+            <input type="button" value="Ctrl+y" onclick="nextStap()" />
             <input type="button" value="←" onclick="keyboardLeftDown()" />
             <input type="button" value="↑" onclick="keyboardTopDown()" />
             <input type="button" value="→" onclick="keyboardRightDown()" />
