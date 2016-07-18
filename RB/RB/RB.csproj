@@ -210,11 +210,13 @@
     <Content Include="Source\Chair.png" />
     <Content Include="Source\Desk.png" />
     <Content Include="Source\buttomAlign.png" />
+    <Content Include="Source\horizonAverage.png" />
     <Content Include="Source\Introduce\DesignRoom.gif" />
     <Content Include="Source\Introduce\DesignRoomMultiEdit.gif" />
     <Content Include="Source\leftAlign.png" />
     <Content Include="Source\rightAlign.png" />
     <Content Include="Source\topAlign.png" />
+    <Content Include="Source\verticalAverage.png" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

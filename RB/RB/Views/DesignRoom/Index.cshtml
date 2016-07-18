@@ -797,8 +797,25 @@
             return false;
         }
 
-      
-        
+        function multiAverage(averageType)
+        {
+            if (currentMultiCheckObjs != null && currentMultiCheckObjs.length > 0) {
+                switch (averageType) {
+                    case "horizon":
+                        currentMultiCheckObjs.horizonAverage();
+                        break;
+                    case "vertical":
+                        currentMultiCheckObjs.verticalAverage();
+                        break;
+                }
+
+                drawEverything();
+                showMultiEditBar();
+                RecordStap();
+            }
+            return false;
+        }
+       
         
 
         //Common End
@@ -861,6 +878,8 @@
                     <div  onclick="multiAlign('buttom')" class="alignIcon" style="background-image: url('../../Source/buttomAlign.png');" title="Buttom Align"></div>
                     <div  onclick="multiAlign('left')" class="alignIcon" style=" background-image: url('../../Source/leftAlign.png');" title="Left Align"></div>
                     <div  onclick="multiAlign('right')" class="alignIcon" style="background-image: url('../../Source/rightAlign.png');" title="Right Align"></div> 
+                    <div onclick="multiAverage('horizon')" class="alignIcon" style="background-image: url('../../Source/horizonAverage.png');" title="Horizon Average"></div> 
+                    <div onclick="multiAverage('vertical')" class="alignIcon" style="background-image: url('../../Source/verticalAverage.png');" title="Vertical Average"></div> 
                 </div>
                 <div class="property-area">
                     <div>Identity:</div>
