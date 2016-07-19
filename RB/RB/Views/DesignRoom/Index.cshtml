@@ -46,7 +46,7 @@
         var currentMultiCheckObjs = new Array();
 
         var sourceCount = 0;
-        var totalSourceCount = 4;
+        var totalSourceCount = 8;
 
         var currentCheckedObjRelativeDistance = new RelativeDistance(0, 0);
 
@@ -241,6 +241,20 @@
             currentCheckedObjRelativeDistance.relativeDistanceY = mousePosition.position.y - currentCheckedObj.position.y;
             currentMultiCheckObjsRelativeDistance = GetCurrentMultiCheckObjsRelativeDistance(mousePosition);
 
+            //选中的对象不是多选工具，都要移除多选工具
+            if (currentCheckedObj.type != Tool.name ) {
+                everything.removeElement(currentMultiCheckTool);
+                currentMultiCheckTool = null;
+            }
+            else {
+                if (
+                currentCheckedObj.toolType != MultiChoseTool.name)
+                {
+                    everything.removeElement(currentMultiCheckTool);
+                    currentMultiCheckTool = null;
+                }
+            }
+
             switch (currentCheckedObj.type)
             {
                 case Tool.name:
@@ -270,10 +284,6 @@
                     canvas.style.cursor = "pointer";
                     break;
                 case Room.name:
-                    if (currentMultiCheckTool != null)
-                    {
-                        everything.removeElement(currentMultiCheckTool);
-                    }
                     currentMultiCheckTool = new MultiChoseTool(mousePosition.position, MultiChoseTool.name);
                     everything.pushElement(currentMultiCheckTool);
                     break;
@@ -375,13 +385,12 @@
                                 currentMultiCheckTool = null;
                             }
                         }
-                        canvas.style.cursor = "default";
                         break;
                     default:
                         break;
                 }
             }
-             
+            canvas.style.cursor = "default";
             drawEverything();
             RecordStap()
         }
@@ -727,7 +736,6 @@
         function resetCurrentObj()
         {
             currentRoom = everything[2];
-
             currentRoom.removeAllEquipment();
 
             for (var i = 0; i < everything.length; i++) {
@@ -737,20 +745,29 @@
             }
 
             toolBar = everything[1];
-
             toolBar.removeAllTool();
 
+            currentMultiCheckTool = null;
+            currentMultiCheckObjs = new Array();
             for (var i = 0; i < everything.length; i++) {
                 if (everything[i].type == Tool.name) {
-                    toolBar.addTool(everything[i]);
+                    switch (everything[i].toolType) {
+                        case ChairTool.name:
+                        case DeskTool.name:
+                            toolBar.addTool(everything[i]);
+                            break;
+                        case MultiChoseTool.name:
+                            currentMultiCheckTool = everything[i];
+                            GetCurrentMultiCheckObjs();
+                            break
+                        default:
+                            break;
+                    }
+                  
                 }
             }
 
             currentCheckedObj = null;
-
-            currentMultiCheckTool = null;
-           
-            currentMultiCheckObjs = new Array();
         }
 
         //计算设备数量
@@ -1030,6 +1047,8 @@
             <img src="~/Source/leftAlign.png" width="0" height="0"/>
             <img src="~/Source/rightAlign.png" width="0" height="0"/>
             <img src="~/Source/topAlign.png" width="0" height="0"/>
+            <img src="~/Source/horizonAverage.png" width="0" height="0"/>
+            <img src="~/Source/verticalAverage.png" width="0" height="0"/>
             <script>
                 $("img").each(function () {
                     this.onload = function () {
