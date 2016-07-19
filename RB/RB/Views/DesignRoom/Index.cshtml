@@ -48,8 +48,9 @@
         var sourceCount = 0;
         var totalSourceCount = 4;
 
+        var currentCheckedObjRelativeDistance = new RelativeDistance(0, 0);
 
-        
+        var currentMultiCheckObjsRelativeDistance = new Array();
         
 
         //Global Variable End
@@ -236,6 +237,10 @@
                 }
             }
 
+            currentCheckedObjRelativeDistance.relativeDistanceX = mousePosition.position.x - currentCheckedObj.position.x;
+            currentCheckedObjRelativeDistance.relativeDistanceY = mousePosition.position.y - currentCheckedObj.position.y;
+            currentMultiCheckObjsRelativeDistance = GetCurrentMultiCheckObjsRelativeDistance(mousePosition);
+
             switch (currentCheckedObj.type)
             {
                 case Tool.name:
@@ -251,6 +256,9 @@
                             var count = calculateCount(Desk.name);
                             mouseDownTool = new Desk(position, size, $("#imgDesk")[0], Desk.name + count);
                             break;
+                        case MultiChoseTool.name:
+                            currentMultiCheckTool.isMouseUp = false;
+                            break;
                         default:
                             break;
                     }
@@ -262,7 +270,12 @@
                     canvas.style.cursor = "pointer";
                     break;
                 case Room.name:
+                    if (currentMultiCheckTool != null)
+                    {
+                        everything.removeElement(currentMultiCheckTool);
+                    }
                     currentMultiCheckTool = new MultiChoseTool(mousePosition.position, MultiChoseTool.name);
+                    everything.pushElement(currentMultiCheckTool);
                     break;
                 default:
                     break;
@@ -277,13 +290,25 @@
                     case Tool.name:
                         if (mouseDownTool != null)
                         {
-                            mouseDownTool.moveTo(mousePosition.position.x - mouseDownTool.size.width / 2, mousePosition.position.y - mouseDownTool.size.height / 2);
+                            mouseDownTool.moveTo(mousePosition.position.x - mouseDownTool.size.width / 2, mousePosition.position.y - mouseDownTool.size.height / 2); 
+                        }
+                        switch (currentCheckedObj.toolType) {
+                            case MultiChoseTool.name:
+                                if (currentMultiCheckTool!=null&&!currentMultiCheckTool.isMouseUp)
+                                {
+                                    currentMultiCheckTool.moveRelativeDisplacement(mousePosition.position, currentCheckedObjRelativeDistance);
+                                    currentMultiCheckObjs.moveRelativeDisplacement(mousePosition.position, currentMultiCheckObjsRelativeDistance);
+                                }
+                                
+                                break;
+                            default:
+                                break;
                         }
                         break;
                     case Equipment.name:
                         if (mouseDownEquipment != null)
                         {
-                            mouseDownEquipment.moveTo(mousePosition.position.x - mouseDownEquipment.size.width / 2, mousePosition.position.y - mouseDownEquipment.size.height / 2);
+                            mouseDownEquipment.moveRelativeDisplacement(mousePosition.position, currentCheckedObjRelativeDistance);
                             showProperty();
                         }
                         break;
@@ -309,10 +334,7 @@
                         if (mouseDownTool != null) {
                             if (mouseDownTool.isInObj(currentRoom)) {//当前鼠标选中对象在Room对象内
                                 var newObj = mouseDownTool;
-
-                                if (everything.indexOf(newObj) < 0) {//不存在时才添加
-                                    everything.push(newObj);
-                                }
+                                everything.pushElement(newObj);
 
                                 if (newObj.type == Equipment.name) {//如果是设备
                                     currentRoom.addEquipment(newObj);
@@ -320,6 +342,15 @@
                             }
                             mouseDownTool = null;
                         }
+
+                        switch (currentCheckedObj.toolType) {
+                            case MultiChoseTool.name:
+                                currentMultiCheckTool.isMouseUp = true;
+                                break;
+                            default:
+                                break;
+                        }
+
                         break;
                     case Equipment.name:
                         if (mouseDownEquipment != null) {
@@ -336,9 +367,11 @@
                         if (currentMultiCheckTool != null) {
                             currentMultiCheckTool.setEndPosition(mousePosition.position);
                             GetCurrentMultiCheckObjs();
+                            currentMultiCheckTool.setCheckedObjs(currentMultiCheckObjs);
                             currentMultiCheckTool.isMouseUp = true;
 
                             if (currentMultiCheckObjs.length == 0) {
+                                everything.removeElement(currentMultiCheckTool);
                                 currentMultiCheckTool = null;
                             }
                         }
@@ -496,7 +529,6 @@
             }
             
             if (currentMultiCheckTool != null) {
-                currentMultiCheckTool.draw();
                 if (currentMultiCheckObjs.length > 0) {
                     for (var i = 0; i < currentMultiCheckObjs.length; i++) {
                         showMultiEditBar();
@@ -755,6 +787,21 @@
             }
         }
 
+        function GetCurrentMultiCheckObjsRelativeDistance(mousePosition)
+        {
+            var relativeDistances=new Array();
+
+            for (var i = 0; i < currentMultiCheckObjs.length; i++)
+            {
+                var relativeDX = mousePosition.position.x - currentMultiCheckObjs[i].position.x;
+                var relativeDY = mousePosition.position.y - currentMultiCheckObjs[i].position.y;
+
+                relativeDistances.push(new RelativeDistance(relativeDX, relativeDY));
+            }
+
+            return relativeDistances;
+        }
+
         //展示多选编辑栏
         function showMultiEditBar() {
             if (currentMultiCheckObjs != null && currentMultiCheckObjs.length>0) {
@@ -788,6 +835,7 @@
         //隐藏多选编辑栏
         function hideMultiEditBar() {
             $("#divMultiTool").hide();
+            everything.removeElement(currentMultiCheckTool);
             currentMultiCheckTool = null;
             currentMultiCheckObjs = new Array();
         }

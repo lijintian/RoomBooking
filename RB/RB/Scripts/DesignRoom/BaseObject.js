@@ -40,6 +40,7 @@ function BaseObject(position, size, type) {
     this.draw = drawObj;
     this.drawName = drawObjName;
     this.moveTo = moveObjTo;
+    this.moveRelativeDisplacement = moveRelativeDisplacement;
     this.check = checkObj;
     this.moveUnit = moveUnit;
     this.equal = equalObj;
@@ -180,6 +181,18 @@ function equalObj(obj) {
         return false;
     }
 }
+
+/*
+@method 移动相对位移
+@param {Position} relativePosition
+@param {RelativeDistance} relativeDistance 
+*/
+function moveRelativeDisplacement(relativePosition, relativeDistance)
+{
+    this.moveTo(relativePosition.x - relativeDistance.relativeDistanceX, relativePosition.y - relativeDistance.relativeDistanceY);
+   
+}
+
 /*===========================================================================================================================*/
 //MousePosition Begin
 
@@ -201,3 +214,9 @@ function MousePosition(ev) {
 
 //MousePosition End
 /*===========================================================================================================================*/
+
+function RelativeDistance(relativeDistanceX, relativeDistanceY)
+{
+    this.relativeDistanceX = relativeDistanceX;
+    this.relativeDistanceY = relativeDistanceY;
+}

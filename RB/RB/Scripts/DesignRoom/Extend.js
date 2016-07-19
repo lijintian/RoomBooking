@@ -8,18 +8,23 @@ Array.prototype.isSameSize = isSameSize;
 Array.prototype.isSameName = isSameName;
 Array.prototype.findMostTop = findMostTop;
 Array.prototype.findMostButtom = findMostButtom;
+Array.prototype.findMostButtomPlusHeight = findMostButtomPlusHeight;
 Array.prototype.findMostLeft = findMostLeft;
 Array.prototype.findMostRight = findMostRight;
+Array.prototype.findMostRightPlusWidth = findMostRightPlusWidth;
 Array.prototype.sortByPositionX = sortByPositionX;
 Array.prototype.sortByPositionY = sortByPositionY;
 Array.prototype.sortByPositionZ = sortByPositionZ;
 Array.prototype.horizonAverage = horizonAverage;
 Array.prototype.verticalAverage = verticalAverage;
 Array.prototype.removeElement = removeElement;
+Array.prototype.pushElement = pushElement;
+
+Array.prototype.moveRelativeDisplacement = moveRelativeDisplacement
 
 
 /*
-@method 判断亮哥数组是否相同(position,size相同及认为相同)
+@method 判断两个数组是否相同(position,size相同及认为相同)
 */
 function arrayEqual(arr) {
     if (this.length == arr.length) {
@@ -174,7 +179,7 @@ function findMostTop()
 }
 
 /*
-@method 找数组元素的最下位置
+@method 找数组元素起点的最下位置
 */
 function findMostButtom() {
     var returnNum = 0;
@@ -184,6 +189,26 @@ function findMostButtom() {
 
         for (var i = 1; i < this.length ; i++) {
             var thisY = this[i].position.y;
+            if (thisY > returnNum) {
+                returnNum = thisY;
+            }
+        }
+    }
+
+    return returnNum;
+}
+
+/*
+@method 找数组元素的最下位置
+*/
+function findMostButtomPlusHeight() {
+    var returnNum = 0;
+
+    if (this.length > 0) {
+        returnNum = this[0].position.y + this[0].size.height;
+
+        for (var i = 1; i < this.length ; i++) {
+            var thisY = this[i].position.y + this[i].size.height;
             if (thisY > returnNum) {
                 returnNum = thisY;
             }
@@ -214,7 +239,7 @@ function findMostLeft() {
 }
 
 /*
-@method 找数组元素的最右位置
+@method 找数组元素起点的最右位置
 */
 function findMostRight() {
     var returnNum = 0;
@@ -232,6 +257,27 @@ function findMostRight() {
 
     return returnNum;
 }
+
+/*
+@method 找数组元素的最右位置
+*/
+function findMostRightPlusWidth() {
+    var returnNum = 0;
+
+    if (this.length > 0) {
+        returnNum = this[0].position.x+this[0].size.width;
+
+        for (var i = 1; i < this.length ; i++) {
+            var thisX = this[i].position.x + this[i].size.width;
+            if (thisX > returnNum) {
+                returnNum = thisX;
+            }
+        }
+    }
+
+    return returnNum;
+}
+
 
 /*
 @method 根据position.x进行排序
@@ -326,12 +372,33 @@ function verticalAverage()
 }
 
 /*
-@移除数组中某个对象
+@method 移除数组中某个对象
 */
 function removeElement(element)
 {
     var indexInArray = this.indexOf(element);
     if (indexInArray >= 0) {
         this.splice(indexInArray, 1);
+    }
+}
+
+/*
+@method 向数组中添加一个不存在的元素
+*/
+function pushElement(element)
+{
+    if (this.indexOf(element) < 0) {//不存在时才添加
+        this.push(element);
+    }
+}
+
+/*
+@method 数组集体移动到position
+*/
+function moveRelativeDisplacement(relativePosition, relativeDistances)
+{
+    for (var i = 0; i < this.length; i++)
+    {
+        this[i].moveRelativeDisplacement(relativePosition, relativeDistances[i]);
     }
 }

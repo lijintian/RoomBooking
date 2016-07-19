@@ -65,7 +65,7 @@ function MultiChoseTool(beginPosition, displayName)
     MultiChoseTool.name = "MultiChoseTool";//兼容IE   
    
     
-    var position = new Position(0, 0);
+    var position = new Position(0, 0,99999);
     var size = new Size(0, 0);
     var img = typeof (undefined);
 
@@ -75,6 +75,8 @@ function MultiChoseTool(beginPosition, displayName)
     this.isMouseUp = false;
     this.draw = drawMultiChoseArea;
     this.setEndPosition = setEndPosition;
+    this.checkedObjs = this.subObjs;
+    this.setCheckedObjs = setCheckedObjs;
 }
 
 function setEndPosition(endPosition)
@@ -126,6 +128,25 @@ function drawMultiChoseArea()
     ctx.strokeStyle = "green";
     ctx.strokeRect(this.position.x,this.position.y,this.size.width,this.size.height);
 }
+
+function setCheckedObjs(checkedObjs)
+{
+    this.checkedObjs = checkedObjs;
+    var left = this.checkedObjs.findMostLeft();
+    var top = this.checkedObjs.findMostTop();
+   
+    var right = this.checkedObjs.findMostRightPlusWidth();
+    var buttom = this.checkedObjs.findMostButtomPlusHeight();
+
+    //重新设置MultiTool的Position和Size
+    this.position.x = left;
+    this.position.y = top;
+
+    this.size.width = right - left;
+    this.size.height = buttom - top;
+   
+}
+
 
 
 
