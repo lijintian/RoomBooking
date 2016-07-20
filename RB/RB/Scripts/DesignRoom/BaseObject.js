@@ -30,11 +30,19 @@ function BaseObject(position, size, type) {
     this.size = size;
     this.type = type;
     this.subObjs = new Array();
+    this.referanceObjs = new Array();
     this.id = guid.newGUID();
     this.displayName="";
+    this.relativeDistance = new RelativeDistance(0, 0);
+    this.subObjsRelativeDistance = new Array();
+    this.referanceObjsRelativeDistance = new Array();
+    this.isChecked = false;
 
     this.addSubObj = addSubObj;
     this.removeSubObj = removeSubObj;
+    this.addReferanceObj = addReferanceObj;
+    this.removeReferanceObj = removeReferanceObj;
+
     this.isContainPoint = isContainPoint;
     this.isInObj = isInObj;
     this.draw = drawObj;
@@ -42,9 +50,16 @@ function BaseObject(position, size, type) {
     this.moveTo = moveObjTo;
     this.moveRelativeDisplacement = moveRelativeDisplacement;
     this.check = checkObj;
+    this.unCheck = unCheckObj;
     this.moveUnit = moveUnit;
     this.equal = equalObj;
     this.clone = clone;
+    
+
+    
+    this.onMouseDown = onMouseDown;
+    this.onMouseMove = onMouseMove;
+    this.onMouseUp = onMouseUp;
 }
 
 function clone() {
@@ -87,6 +102,20 @@ function removeSubObj(obj) {
         this.subObjs.splice(indexInObj, 1);
     }
 }
+
+function addReferanceObj(obj) {
+    if (this.referanceObjs.indexOf(obj) < 0) {
+        this.referanceObjs.push(obj);
+    }
+}
+
+function removeReferanceObj(obj) {
+    var indexInObj = this.referanceObjs.indexOf(obj);
+    if (referanceObjs >= 0) {
+        this.referanceObjs.splice(indexInObj, 1);
+    }
+}
+
 
 function isContainPoint(pointX, pointY) {
     ////此处实现二维判断，未来可拓展三围
@@ -162,8 +191,38 @@ function moveObjTo(x, y) {
 }
 
 function checkObj() {
-    ctx.strokeStyle = "blue";
-    ctx.strokeRect(this.position.x, this.position.y, this.size.width, this.size.height);
+    var position = new Position(this.position.x, this.position.y,1000);
+    var size = new Size(this.size.width,this.size.height);
+
+    var resizeTool = new ResizeTool(position, size, "");
+
+    if (this === resizeTool) {
+        //选中的是ResizeTool自身不做处理
+    }
+    else {
+        resizeTool.referanceObjs = new Array();
+        resizeTool.addReferanceObj(this);
+        everything.pushElement(resizeTool);
+        everything.pushElements(resizeTool.resizeRectangles);
+    }
+   
+    
+
+}
+
+function unCheckObj()
+{
+    var position = new Position(this.position.x, this.position.y, 999);
+    var size = new Size(this.size.width, this.size.height);
+
+    var resizeTool = new ResizeTool(position, size, "");
+
+    everything.removeElement(resizeTool);
+
+    for (var i = 0; i < resizeTool.resizeRectangles.length; i++)
+    {
+        everything.removeElement(resizeTool.resizeRectangles[i]);
+    }
 }
 
 function moveUnit(xUnit, yUnit) {
@@ -193,9 +252,37 @@ function moveRelativeDisplacement(relativePosition, relativeDistance)
    
 }
 
+function onMouseDown(ev) {
+    var mousePosition = new MousePosition(ev);
+    this.isChecked = true;
+    this.relativeDistance.relativeDistanceX = mousePosition.position.x - this.position.x;
+    this.relativeDistance.relativeDistanceY = mousePosition.position.y - this.position.y;
+    this.check();
+}
+
+function onMouseMove(ev) {
+    var mousePosition = new MousePosition(ev);
+    if (this.isChecked == true) {
+        this.moveRelativeDisplacement(mousePosition.position, this.relativeDistance);
+        this.check();
+    }
+    else {
+       
+    }
+}
+
+function onMouseUp(ev) {
+    var mousePosition = new MousePosition(ev);
+    this.isChecked = false;
+}
+
+
 /*===========================================================================================================================*/
 //MousePosition Begin
 
+/*
+@method 鼠标位置 单例
+*/
 function MousePosition(ev) {
     var mx;
     var my;
@@ -208,8 +295,16 @@ function MousePosition(ev) {
         mx = ev.layerX;
         my = ev.layerY;
     }
+    if(MousePosition.unique!=undefined)
+    {
+        MousePosition.unique.position.x=mx;
+        MousePosition.unique.position.y=my;
+        return MousePosition.unique;
+    }
 
     this.position = new Position(mx, my);
+
+    MousePosition.unique=this;
 }
 
 //MousePosition End

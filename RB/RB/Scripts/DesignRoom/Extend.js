@@ -19,9 +19,27 @@ Array.prototype.horizonAverage = horizonAverage;
 Array.prototype.verticalAverage = verticalAverage;
 Array.prototype.removeElement = removeElement;
 Array.prototype.pushElement = pushElement;
-
+Array.prototype.pushElements = pushElements;
 Array.prototype.moveRelativeDisplacement = moveRelativeDisplacement
+Array.prototype.GetRelativeDistances = arrayGetRelativeDistances;
+Array.prototype.getObjsInObj = arrayGetObjsInObj;
+Array.prototype.check = arrayCheck;
 
+
+function arrayGetRelativeDistances(mousePosition)
+{
+    var relativeDistances=new Array();
+
+    for (var i = 0; i < this.length; i++)
+    {
+        var relativeDX = mousePosition.position.x - this[i].position.x;
+        var relativeDY = mousePosition.position.y - this[i].position.y;
+
+        relativeDistances.push(new RelativeDistance(relativeDX, relativeDY));
+    }
+
+    return relativeDistances;
+}
 
 /*
 @method 判断两个数组是否相同(position,size相同及认为相同)
@@ -392,6 +410,14 @@ function pushElement(element)
     }
 }
 
+function pushElements(elements)
+{
+    for (var i = 0; i < elements.length; i++)
+    {
+        this.pushElement(elements[i]);
+    }
+}
+
 /*
 @method 数组集体移动到position
 */
@@ -400,5 +426,28 @@ function moveRelativeDisplacement(relativePosition, relativeDistances)
     for (var i = 0; i < this.length; i++)
     {
         this[i].moveRelativeDisplacement(relativePosition, relativeDistances[i]);
+    }
+}
+
+
+function arrayGetObjsInObj(obj)
+{
+    var inObjs = new Array();
+
+    for (var i = 0; i < this.length; i++) {
+        if (this[i].type == Equipment.name) {
+            if (this[i].isInObj(obj)) {//在多选工具内
+                inObjs.pushElement(this[i]);
+            }
+        }
+    }
+
+    return inObjs;
+}
+
+function arrayCheck()
+{
+    for (var i = 0; i < this.length; i++) {
+        this[i].check(true);
     }
 }

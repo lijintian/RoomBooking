@@ -11,6 +11,9 @@ function Stage(position, size, padding) {
     BaseObject.apply(this, new Array(position, size, Stage.name));
     this.padding = padding;
     this.draw = drawStage;
+    this.onMouseDown = function () { this.unCheck() };
+    this.onMouseMove = function () { };
+    this.onMouseUp = function () { };
 }
 
 function drawStage() {

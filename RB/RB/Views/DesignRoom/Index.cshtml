@@ -10,12 +10,18 @@
     <title></title>
     <link href="~/Content/DesignRoom.css" rel="stylesheet" />
 
+    <script src="~/Scripts/DesignRoom/Common.js"></script>
     <script src="~/Scripts/DesignRoom/GUID.js"></script>
     <script src="~/Scripts/jquery-1.10.2.min.js"></script>
     <script src="~/Scripts/DesignRoom/Extend.js"></script>
     <script src="~/Scripts/DesignRoom/BaseObject.js"></script>
     <script src="~/Scripts/DesignRoom/Stage.js"></script>
     <script src="~/Scripts/DesignRoom/ToolBar.js"></script>
+    <script src="~/Scripts/DesignRoom/Tool/Tool.js"></script>
+    <script src="~/Scripts/DesignRoom/Tool/ChairTool.js"></script>
+    <script src="~/Scripts/DesignRoom/Tool/DeskTool.js"></script>
+    <script src="~/Scripts/DesignRoom/Tool/MultiChoseTool.js"></script>
+    <script src="~/Scripts/DesignRoom/Tool/ResizeTool.js"></script>
     <script src="~/Scripts/DesignRoom/Equipment.js"></script>
     <script src="~/Scripts/DesignRoom/Room.js"></script>
     <script type="text/javascript">
@@ -63,10 +69,14 @@
             canvas = document.getElementById("roomCanvas");
             ctx = canvas.getContext("2d");
 
-            canvas.addEventListener("mousedown", mouseDown, false);
+            /*/canvas.addEventListener("mousedown", mouseDown, false);
             canvas.addEventListener("mousemove", mouseMove, false);
             canvas.addEventListener("mouseup", mouseUp, false);
-            document.addEventListener("keydown", keyDown, false);
+            document.addEventListener("keydown", keyDown, false);*/
+
+            canvas.addEventListener("mousedown", mouseDown1, false);
+            canvas.addEventListener("mousemove", mouseMove1, false);
+            canvas.addEventListener("mouseup", mouseUp1, false);
 
             showLoading();
             loadingInterval = window.setInterval(load, 100);
@@ -514,10 +524,7 @@
         {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
   
-            for (var i = 0; i < everything.length; i++)
-            {
-                everything[i].draw();
-            }
+           
 
             if (currentCheckedObj != null) {
 
@@ -532,6 +539,12 @@
                 hideProperty();
             }
 
+            
+            for (var i = 0; i < everything.length; i++) {
+                everything[i].draw();
+            }
+
+
             if (mouseDownTool != null)
             {
                 mouseDownTool.draw();
@@ -539,10 +552,11 @@
             
             if (currentMultiCheckTool != null) {
                 if (currentMultiCheckObjs.length > 0) {
-                    for (var i = 0; i < currentMultiCheckObjs.length; i++) {
+                    showMultiEditBar();
+                    /*for (var i = 0; i < currentMultiCheckObjs.length; i++) {
                         showMultiEditBar();
                         currentMultiCheckObjs[i].check();
-                    }
+                    }*/
                 }
             }
             else {
@@ -804,6 +818,7 @@
             }
         }
 
+        //获取当前多选对象们的相对位移
         function GetCurrentMultiCheckObjsRelativeDistance(mousePosition)
         {
             var relativeDistances=new Array();
@@ -941,7 +956,55 @@
         //Common End
         /*===========================================================================================================================*/
 
-        //todo:支持多选
+        var currentOpObj;
+        
+        function mouseDown1(ev) {
+            var mousePosition = new MousePosition(ev);
+            everything.sortByPositionZ();//z值高的总在数组后边
+
+            for (var i = everything.length - 1; i >= 0; i--) {//从数据后往前找选中的对象    
+                if (everything[i].isContainPoint(mousePosition.position.x, mousePosition.position.y)) {
+                    currentOpObj = everything[i];
+                    currentOpObj.onMouseDown(ev);
+                    break;
+                }  
+            }
+
+            drawEverything1();
+
+        }
+
+        function mouseMove1(ev) {
+            everything.sortByPositionZ();//z值高的总在数组后边
+            if (currentOpObj != null)
+            {
+                currentOpObj.onMouseMove(ev);
+            }
+
+            drawEverything1();
+
+        }
+
+        function mouseUp1(ev) {
+            if (currentOpObj != null)
+            {
+                currentOpObj.onMouseUp(ev);
+            }
+
+            drawEverything1();
+        }
+
+       
+        function drawEverything1()
+        {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            everything.sortByPositionZ();//z值高的总在数组后边
+            for (var i = 0; i < everything.length;i++) {//从数据后往前找选中的对象
+                everything[i].draw();
+            }
+
+        }
+
     </script>
 </head>
 <body>
