@@ -177,7 +177,7 @@ function effectMultiEdit(currentMultiCheckObjs) {
                 obj.size.height = newSizeHeight;
             }
 
-            if (displayName.trim() != null) {
+            if (displayName.trim() != "") {
                 obj.displayName = displayName;
             }
         }
