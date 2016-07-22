@@ -1,7 +1,14 @@
-﻿function MultiChoseTool(beginPosition, displayName) {
+﻿/*
+@method 单例
+*/
+function MultiChoseTool(beginPosition, displayName) {
 
+    var position = new Position(0, 0, 999);
+    var size = new Size(0, 0);
     if (MultiChoseTool.unique != undefined)
     {
+        MultiChoseTool.unique.position = position;
+        MultiChoseTool.unique.size = size;
         MultiChoseTool.unique.beginPosition = beginPosition;
         MultiChoseTool.unique.endPosition = beginPosition;
         return MultiChoseTool.unique;
@@ -10,8 +17,8 @@
     MultiChoseTool.name = "MultiChoseTool";//兼容IE   
 
 
-    var position = new Position(0, 0, 999);
-    var size = new Size(0, 0);
+   
+   
     var img = typeof (undefined);
 
     Tool.apply(this, new Array(position, size, img, MultiChoseTool.name, displayName));

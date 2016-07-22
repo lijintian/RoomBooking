@@ -5,7 +5,7 @@
     this.newDesk;
     this.onMouseDown = deskToolOnMouseDown;
     this.onMouseMove = deskToolOnMouseMove;
-    this.onMouseUp = deskToolOnMouseUp ;
+    this.onMouseUp = deskToolOnMouseUp;
 }
 
 function deskToolOnMouseDown(ev) {
@@ -20,6 +20,8 @@ function deskToolOnMouseDown(ev) {
     this.newDesk = new Desk(position, size, $("#imgDesk")[0], Desk.name + count);
     everything.pushElement(this.newDesk);
     currentRoom.addEquipment(this.newDesk);
+
+    this.unCheck();
 }
 
 function deskToolOnMouseMove(ev) {

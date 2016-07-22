@@ -60,6 +60,11 @@ function BaseObject(position, size, type) {
     this.onMouseDown = onMouseDown;
     this.onMouseMove = onMouseMove;
     this.onMouseUp = onMouseUp;
+    this.onKeyDown = function () { };
+    this.keyboardRightDown = keyboardRightDown;
+    this.keyboardTopDown = keyboardTopDown;
+    this.keyboardLeftDown = keyboardLeftDown;
+    this.keyboardButtomDown = keyboardButtomDown;
 }
 
 function clone() {
@@ -68,7 +73,7 @@ function clone() {
 
 function cloneObj(obj) {
     var o;
-    if (obj.constructor.name == "HTMLImageElement") {//todo:name 在IE不兼容
+    if (obj.constructor.name == "HTMLImageElement") {
         return $(obj)[0];
     }
     if (obj.constructor == Object) {
@@ -192,10 +197,12 @@ function moveObjTo(x, y) {
 
 function checkObj() {
     var position = new Position(this.position.x, this.position.y,1000);
-    var size = new Size(this.size.width,this.size.height);
+    var size = new Size(this.size.width.valueOf(), this.size.height.valueOf());
 
     var resizeTool = new ResizeTool(position, size, "");
 
+    //每次选中，则当前操作对象变成ResizeTool
+    currentOpObj = resizeTool;
     if (this === resizeTool) {
         //选中的是ResizeTool自身不做处理
     }
@@ -204,25 +211,30 @@ function checkObj() {
         resizeTool.addReferanceObj(this);
         everything.pushElement(resizeTool);
         everything.pushElements(resizeTool.resizeRectangles);
+        
     }
    
-    
+    resizeTool.showReferenceObjsProperty();
+    //选中后清除多选工具
+    everything.removeElement(MultiChoseTool.unique);
 
 }
 
 function unCheckObj()
 {
-    var position = new Position(this.position.x, this.position.y, 999);
-    var size = new Size(this.size.width, this.size.height);
+    everything.removeElement(MultiChoseTool.unique);
+    everything.removeElement(ResizeTool.unique);
 
-    var resizeTool = new ResizeTool(position, size, "");
-
-    everything.removeElement(resizeTool);
-
-    for (var i = 0; i < resizeTool.resizeRectangles.length; i++)
+    if (ResizeTool.unique != undefined)
     {
-        everything.removeElement(resizeTool.resizeRectangles[i]);
+        for (var i = 0; i < ResizeTool.unique.resizeRectangles.length; i++) {
+            everything.removeElement(ResizeTool.unique.resizeRectangles[i]);
+        }
+
     }
+   
+    hideProperty();
+    hideMultiEditBar();
 }
 
 function moveUnit(xUnit, yUnit) {
@@ -276,6 +288,34 @@ function onMouseUp(ev) {
     this.isChecked = false;
 }
 
+function keyboardRightDown() {
+    var mouveUnit = 1;
+    this.moveUnit(mouveUnit, 0);
+    mouveUnit = this.isInObj(currentRoom) ? 0 : -1;
+    this.moveUnit(mouveUnit, 0);
+}
+
+function keyboardTopDown() {
+    var mouveUnit = -1;
+    this.moveUnit(0, mouveUnit);
+    mouveUnit = this.isInObj(currentRoom) ? 0 : 1;
+    this.moveUnit(0, mouveUnit);
+}
+
+function keyboardLeftDown() {
+    var mouveUnit = -1;
+    this.moveUnit(mouveUnit, 0);
+    mouveUnit = this.isInObj(currentRoom) ? 0 : 1;
+    this.moveUnit(mouveUnit, 0);
+
+}
+
+function keyboardButtomDown() {
+    var mouveUnit = 1;
+    this.moveUnit(0, mouveUnit);
+    mouveUnit = this.isInObj(currentRoom) ? 0 : -1;
+    this.moveUnit(0, mouveUnit);
+}
 
 /*===========================================================================================================================*/
 //MousePosition Begin

@@ -20,6 +20,8 @@ function chairToolOnMouseDown(ev) {
     this.newChair = new Chair(position, size, $("#imgChair")[0], Chair.name + count);
     everything.pushElement(this.newChair);
     currentRoom.addEquipment(this.newChair);
+
+    this.unCheck();
 }
 
 function chairToolOnMouseMove(ev) {

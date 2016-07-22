@@ -25,10 +25,12 @@ function Room(position, size) {
 function onRoomMouseDown(ev)
 {
     var mousePosition = new MousePosition(ev);
-    this.unCheck();
     this.isChecked = true;
+    this.unCheck();
+
     this.currentMultiCheckTool = new MultiChoseTool(new Position(mousePosition.position.x,mousePosition.position.y), MultiChoseTool.name);
     everything.pushElement(this.currentMultiCheckTool);
+   
 }
 
 function onRoomMouseMove(ev)
@@ -46,7 +48,7 @@ function onRoomMouseUp(ev)
 
     //多选工具选中的对象
     var checkedObjs = everything.getObjsInObj(this.currentMultiCheckTool);
-
+    this.currentMultiCheckTool.setEndPosition(new Position(mousePosition.position.x, mousePosition.position.y));
     if (checkedObjs.length == 0) {//没有选中则从everything中移除MultiCheckTool
         everything.removeElement(this.currentMultiCheckTool);
     }
@@ -55,7 +57,7 @@ function onRoomMouseUp(ev)
         this.currentMultiCheckTool.check();
     }
 
-  
+    
 }
 
 

@@ -4,28 +4,39 @@
 @param {Position} position 位置信息
 */
 function ResizeTool(position, size, displayName) {
+    ResizeTool.name = "ResizeTool";
     if (ResizeTool.unique !== undefined) {
         ResizeTool.unique.position = position;
         ResizeTool.unique.size = size;
         ResizeTool.unique.moveResizeRetangle();
         return ResizeTool.unique
     }
-    ResizeTool.name = "ResizeTool";
+   
     var img = typeof (undefined);
     Tool.apply(this, new Array(position, size, img, ResizeTool.name, displayName));
-
-    this.allReferanceObjs = new Array();
-    this.resizeRectangles = this.subObjs;
-    this.addResizeRectangle = this.addSubObj;
-    this.removeAllResizeRectangle = removeAllResizeRectangle;
+    /*----------------------OverRide Begin------------------------------*/
     this.draw = drawResizeTool;
-    this.moveResizeRetangle = moveResizeRetangle;
     this.onMouseDown = onResizeToolMouseDown;
     this.onMouseMove = onResizeToolMouseMove;
     this.onMouseUp = onResizeToolMouseUp;
+    this.onKeyDown = onResizeToolKeyDown;
+
+    this.resizeRectangles = this.subObjs;
+    this.addResizeRectangle = this.addSubObj; 
+    /*----------------------OverRide End------------------------------*/
+
+
+    this.allReferanceObjs = new Array();
+    this.removeAllResizeRectangle = removeAllResizeRectangle;
+    this.moveResizeRetangle = moveResizeRetangle;
+    this.getAllReferanceObjs = resizeToolGetAllReferanceObjs;
+    this.showReferenceObjsProperty = showReferenceObjsProperty;
+    this.effectReferenceObjsProperty = effectReferenceObjsProperty;
+    this.alignReferenceObjs = alignReferenceObjs;
+    this.averageReferenceObjs = averageReferenceObjs;
+    this.refreshPositionAndSize = refreshPositionAndSize;
 
     retangleRadius = 3;
-
     //左上角
     var position0 = new Position(this.position.x - retangleRadius, this.position.y - retangleRadius,1001);
     var size0 = new Size(2 * retangleRadius, 2 * retangleRadius);
@@ -117,6 +128,12 @@ function removeAllResizeRectangle() {
     this.resizeRectangles = this.subObjs = new Array();
 }
 
+function resizeToolGetAllReferanceObjs()
+{
+    this.allReferanceObjs = getAllReferanceObjs(this);
+    return this.allReferanceObjs;
+}
+
 function onResizeToolMouseDown(ev) {
     var mousePosition = new MousePosition(ev);
     this.isChecked = true;
@@ -124,7 +141,7 @@ function onResizeToolMouseDown(ev) {
     this.relativeDistance.relativeDistanceY = mousePosition.position.y - this.position.y;
     this.subObjsRelativeDistance = this.subObjs.GetRelativeDistances(mousePosition)
 
-    this.allReferanceObjs = getAllReferanceObjs(this);
+    
  
     this.referanceObjsRelativeDistance = this.allReferanceObjs.GetRelativeDistances(mousePosition);
     this.check();
@@ -151,6 +168,110 @@ function onResizeToolMouseUp(ev) {
     this.isChecked = false;
 }
 
+function onResizeToolKeyDown(e) {
+  
+    keyCode = e.keyCode;
+    this.getAllReferanceObjs();
+
+    switch (keyCode) {
+        case 37://←   
+            this.keyboardLeftDown();
+            this.moveResizeRetangle();
+            for (var i = 0; i < this.allReferanceObjs.length; i++)
+            {
+                this.allReferanceObjs[i].keyboardLeftDown();
+            }
+           
+            break;
+        case 38://↑
+            this.keyboardTopDown();
+            this.moveResizeRetangle();
+            for (var i = 0; i < this.allReferanceObjs.length; i++) {
+                this.allReferanceObjs[i].keyboardTopDown();
+            }
+            break
+        case 39://→
+            this.keyboardRightDown();
+            this.moveResizeRetangle();
+            for (var i = 0; i < this.allReferanceObjs.length; i++) {
+                this.allReferanceObjs[i].keyboardRightDown();
+            }
+            break
+        case 40://↓
+            this.keyboardButtomDown();
+            this.moveResizeRetangle();
+            for (var i = 0; i < this.allReferanceObjs.length; i++) {
+                this.allReferanceObjs[i].keyboardButtomDown();
+            }
+            break
+        default:
+            document.removeEventListener("keydown", keyDown, false);
+            break
+    }
+
+    this.showReferenceObjsProperty();
+}
+
+function showReferenceObjsProperty()
+{
+    this.getAllReferanceObjs();
+    //引用移除多选工具
+    this.allReferanceObjs.removeElement(new MultiChoseTool(new Position(0,0),""));
+
+    if (this.allReferanceObjs.length > 1) {//多选
+        showMultiEditBar(this.allReferanceObjs);
+    }
+    else if (this.allReferanceObjs.length==1) {//只选中了一个
+        showProperty(this.allReferanceObjs[0]);
+    }
+}
+
+function effectReferenceObjsProperty() {
+    this.getAllReferanceObjs();
+    this.allReferanceObjs.removeElement(new MultiChoseTool(new Position(0, 0), ""));
+
+    if (this.allReferanceObjs.length > 1) {//多选
+        effectMultiEdit(this.allReferanceObjs);
+        this.refreshPositionAndSize();
+    }
+    else if (this.allReferanceObjs.length == 1) {//只选中了一个
+        effectProperty(this.allReferanceObjs[0]);
+        this.allReferanceObjs[0].check();
+       
+    }
+ 
+
+    drawEverything();
+}
+
+function alignReferenceObjs(direct)
+{
+    multiAlign(direct, this.allReferanceObjs);
+    this.refreshPositionAndSize();
+    drawEverything();
+}
+
+function averageReferenceObjs(averageType)
+{
+    multiAverage(averageType, this.allReferanceObjs);
+    this.refreshPositionAndSize();
+    drawEverything();
+}
+
+function refreshPositionAndSize() {
+    var left = this.allReferanceObjs.findMostLeft();
+    var top = this.allReferanceObjs.findMostTop();
+
+    var right = this.allReferanceObjs.findMostRightPlusWidth();
+    var buttom = this.allReferanceObjs.findMostButtomPlusHeight();
+
+    //重新设置MultiTool的Position和Size
+    var position = new Position(left, top);
+    var size = new Size(right - left,buttom - top);
+
+    new ResizeTool(position, size, "");
+}
+
 
 
 
@@ -169,8 +290,8 @@ function ResizeRectangle(position, size, displayName, direct) {
 }
 
 function drawResizeRectangle() {
-    ctx.strokeStyle = "lightblue";
-    ctx.fillStyle = "white";
-    ctx.strokeRect(this.position.x, this.position.y, this.size.width, this.size.height);
-    ctx.fillRect(this.position.x, this.position.y, this.size.width, this.size.height);
-}
+        ctx.strokeStyle = "lightblue";
+        ctx.fillStyle = "white";
+        ctx.strokeRect(this.position.x, this.position.y, this.size.width, this.size.height);
+        ctx.fillRect(this.position.x, this.position.y, this.size.width, this.size.height);
+    }

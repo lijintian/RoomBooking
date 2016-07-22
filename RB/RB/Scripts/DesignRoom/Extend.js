@@ -67,6 +67,11 @@ function arrayClone() {
     var arr = new Array();
 
     for (var i = 0; i < this.length; i++) {
+
+        if (this[i] instanceof ResizeTool || this[i] instanceof ResizeRectangle || this[i] instanceof MultiChoseTool)
+        {//ResizeTool、ResizeRectangle、MultiChoseTool不Copy
+            continue;
+        }
         var cloneObj = this[i].clone();
         arr.push(cloneObj);
     }
@@ -414,7 +419,11 @@ function pushElements(elements)
 {
     for (var i = 0; i < elements.length; i++)
     {
-        this.pushElement(elements[i]);
+        if (typeof (elements[i].type) != "undefined")
+        {
+            this.pushElement(elements[i]);
+        }
+       
     }
 }
 
