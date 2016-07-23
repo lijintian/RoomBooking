@@ -134,6 +134,7 @@
                 }
             }
 
+            showCursor(ev);
             drawEverything();
 
         }
@@ -143,7 +144,7 @@
             if (currentOpObj != null) {
                 currentOpObj.onMouseMove(ev);
             }
-
+            showCursor(ev);
             drawEverything();
 
         }
@@ -265,12 +266,14 @@
 
         <div>
             keyboard op:
-            <input type="button" value="Ctrl+z" onclick="preStap()" />
-            <input type="button" value="Ctrl+y" onclick="nextStap()" />
-            <input type="button" value="←" onclick="keyboardLeftDown()" />
-            <input type="button" value="↑" onclick="keyboardTopDown()" />
-            <input type="button" value="→" onclick="keyboardRightDown()" />
-            <input type="button" value="↓" onclick="keyboardButtomDown()" />
+            <input type="button" value="Ctrl+z" onclick="preStap(); drawEverything();" />
+            <input type="button" value="Ctrl+y" onclick="nextStap(); drawEverything();" />
+            <input type="button" value="←" onclick="var e = new Object(); e.keyCode = 37; currentOpObj.onKeyDown(e); drawEverything(); RecordStap();" />
+            <input type="button" value="↑" onclick="var e = new Object(); e.keyCode = 38; currentOpObj.onKeyDown(e); drawEverything(); RecordStap();" />
+            <input type="button" value="→" onclick="var e = new Object(); e.keyCode = 39; currentOpObj.onKeyDown(e); drawEverything(); RecordStap();" />
+            <input type="button" value="↓" onclick="var e = new Object(); e.keyCode = 40; currentOpObj.onKeyDown(e); drawEverything(); RecordStap();" />
+            <input type="button" value="Delete" onclick="var e = new Object(); e.keyCode = 46; currentOpObj.onKeyDown(e); drawEverything(); RecordStap();" />
+
         </div>
 
         <div>

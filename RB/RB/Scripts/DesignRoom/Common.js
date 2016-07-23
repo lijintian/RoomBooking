@@ -439,3 +439,74 @@ function deleteInit()
     hideProperty();
     hideMultiEditBar();
 }
+
+
+function showCursor(ev)
+{
+    var mousePosition = new MousePosition(ev);
+
+    everything.sortByPositionZ();//z值高的总在数组后边
+
+    for (var i = everything.length - 1; i >= 0; i--) //从数据后往前找选中的对象   
+    {
+        if (everything[i].isContainPoint(mousePosition.position.x, mousePosition.position.y))
+        {
+            var type = everything[i].type;
+            switch (type)
+            {
+                case Equipment.name:
+
+                    canvas.style.cursor = "pointer";
+                    break;
+
+                case Tool.name:
+                    var toolType = everything[i].toolType;
+                    switch (toolType)
+                    {
+                        case ResizeTool.name:
+                        case ChairTool.name:
+                        case DeskTool.name:
+                            canvas.style.cursor = "pointer";
+                            break;
+                        case ResizeRectangle.name:
+                            var direct = everything[i].direct;
+                            switch (direct)
+                            {
+                                case 0:
+                                    canvas.style.cursor = "nw-resize";
+                                    break;
+                                case 1:
+                                    canvas.style.cursor = "n-resize";
+                                    break;
+                                case 2:
+                                    canvas.style.cursor = "ne-resize";
+                                    break;
+                                case 3:
+                                    canvas.style.cursor = "e-resize";
+                                    break;
+                                case 4:
+                                    canvas.style.cursor = "se-resize";
+                                    break;
+                                case 5:
+                                    canvas.style.cursor = "s-resize";
+                                    break;
+                                case 6:
+                                    canvas.style.cursor = "sw-resize";
+                                    break;
+                                case 7:
+                                    canvas.style.cursor = "w-resize";
+                                    break;
+                            }
+                    }
+                    break;
+                case Room.name:
+                    canvas.style.cursor = "default";
+                    break;
+                default:
+                    canvas.style.cursor = "default";
+                    break;
+            }
+            break;
+        }
+    }
+}

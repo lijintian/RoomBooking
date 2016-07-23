@@ -218,8 +218,8 @@
     <Content Include="Source\Desk.png" />
     <Content Include="Source\buttomAlign.png" />
     <Content Include="Source\horizonAverage.png" />
-    <Content Include="Source\Introduce\DesignRoom.gif" />
-    <Content Include="Source\Introduce\DesignRoomMultiEdit.gif" />
+    <Content Include="Source\Introduce\MultiOp.gif" />
+    <Content Include="Source\Introduce\SingleOp.gif" />
     <Content Include="Source\leftAlign.png" />
     <Content Include="Source\rightAlign.png" />
     <Content Include="Source\topAlign.png" />
