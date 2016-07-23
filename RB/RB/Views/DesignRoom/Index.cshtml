@@ -72,7 +72,7 @@
         /*===========================================================================================================================*/
 
         //Keyboard And Mouse Event Begin
-        var preventDefaultKeyCode = [37, 38, 39, 40, 89, 90];
+        var preventDefaultKeyCode = [37, 38, 39, 40,46, 89, 90];
 
         function keyDown(ev) {
             var e = ev || window.event;
@@ -277,9 +277,10 @@
             <ul>
                 <li>设置RoomWidth、RoomHeight按Enter按钮即可生成对应大小的Room</li>
                 <li>直接拖拽ToolBar的Toll到Stage即可在Stage生成Tool</li>  
-                <li>选中Stage中的对象可设置对象的属性，拖拽对象可以移动对象，对象超出Stage范围会移除对象</li>
+                <li>选中Stage中的对象可设置对象的属性，拖拽对象可以移动对象</li>
                 <li>选中Stage中的对象,使用键盘上的↑↓←→方向键可以进行位置微调</li>
                 <li>使用键盘Ctrl+z回到上一步操作，Ctrl+y回到下一步操作</li>
+                <li>选中对象，按Delete键移除对象</li>
             </ul>
         </div>
 

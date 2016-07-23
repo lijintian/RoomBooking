@@ -186,6 +186,12 @@ function onResizeToolKeyDown(e) {
     this.referanceObjsRelateResizeToolDistance = this.allReferanceObjs.getRelativeDistances(this);
 
     switch (keyCode) {
+        case 46://Delete
+            everything.removeElements(this.allReferanceObjs);
+            everything.removeElements(this.resizeRectangles);
+            everything.removeElement(this);
+            deleteInit();
+            break;
         case 37://←   
             this.keyboardLeftDown();
             this.moveResizeRetangle();
@@ -211,7 +217,10 @@ function onResizeToolKeyDown(e) {
             break
     }
 
-    this.showReferenceObjsProperty();
+    if (keyCode >= 37 && keyCode <= 40)
+    {
+        this.showReferenceObjsProperty();
+    }
 }
 
 function showReferenceObjsProperty()

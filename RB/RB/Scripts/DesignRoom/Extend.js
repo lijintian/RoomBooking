@@ -18,6 +18,7 @@ Array.prototype.sortByPositionZ = sortByPositionZ;
 Array.prototype.horizonAverage = horizonAverage;
 Array.prototype.verticalAverage = verticalAverage;
 Array.prototype.removeElement = removeElement;
+Array.prototype.removeElements = removeElements;
 Array.prototype.pushElement = pushElement;
 Array.prototype.pushElements = pushElements;
 Array.prototype.moveRelativeDisplacement = moveRelativeDisplacement
@@ -402,6 +403,14 @@ function removeElement(element)
     var indexInArray = this.indexOf(element);
     if (indexInArray >= 0) {
         this.splice(indexInArray, 1);
+    }
+}
+
+function removeElements(elements)
+{
+    for (var i = 0; i < elements.length; i++)
+    {
+        this.removeElement(elements[i]);
     }
 }
 

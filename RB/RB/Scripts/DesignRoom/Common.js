@@ -432,3 +432,10 @@ function goToStapInit() {
     hideProperty();
     hideMultiEditBar();
 }
+
+function deleteInit()
+{
+    currentOpObj = null;
+    hideProperty();
+    hideMultiEditBar();
+}
