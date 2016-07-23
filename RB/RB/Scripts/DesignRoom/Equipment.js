@@ -11,6 +11,25 @@ function Equipment(position, size, img, equipmentType) {
     BaseObject.apply(this, new Array(position, size, Equipment.name));
     this.equipmentType = equipmentType;
     this.img = img;
+
+    //this.onMouseDown = onMouseDown;
+    this.onMouseMove = onEquipmentMouseMove;
+}
+
+function onEquipmentMouseMove(ev)
+{
+    var mousePosition = new MousePosition(ev);
+    if (this.isChecked == true) {
+        if (this.isInObj(currentRoom))
+        {
+            this.moveRelativeDisplacement(mousePosition.position, this.relativeDistance);
+            this.onBorder(currentRoom);
+            this.check();
+        }
+    }
+    else {
+        this.onBorder(currentRoom);
+    }
 }
 
 /**

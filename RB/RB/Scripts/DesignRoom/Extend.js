@@ -21,7 +21,7 @@ Array.prototype.removeElement = removeElement;
 Array.prototype.pushElement = pushElement;
 Array.prototype.pushElements = pushElements;
 Array.prototype.moveRelativeDisplacement = moveRelativeDisplacement
-Array.prototype.GetRelativeDistances = arrayGetRelativeDistances;
+Array.prototype.getRelativeDistances = arrayGetRelativeDistances;
 Array.prototype.getObjsInObj = arrayGetObjsInObj;
 Array.prototype.check = arrayCheck;
 

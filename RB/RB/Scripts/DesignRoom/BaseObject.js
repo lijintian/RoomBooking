@@ -54,6 +54,7 @@ function BaseObject(position, size, type) {
     this.moveUnit = moveUnit;
     this.equal = equalObj;
     this.clone = clone;
+    this.onBorder = onBorder;
     
 
     
@@ -202,7 +203,7 @@ function checkObj() {
     var resizeTool = new ResizeTool(position, size, "");
 
     //每次选中，则当前操作对象变成ResizeTool
-    currentOpObj = resizeTool;
+    //currentOpObj = resizeTool;
     if (this === resizeTool) {
         //选中的是ResizeTool自身不做处理
     }
@@ -250,6 +251,25 @@ function equalObj(obj) {
     }
     else {
         return false;
+    }
+}
+
+function onBorder(obj)
+{
+    if (this.position.x < obj.position.x)
+    {
+        this.position.x = obj.position.x ;
+    }
+    if (this.position.y < obj.position.y) {
+        this.position.y = obj.position.y ;
+    }
+
+    if (this.position.x + this.size.width > obj.position.x + obj.size.width) {
+        this.position.x = obj.position.x + obj.size.width - this.size.width;
+    }
+
+    if (this.position.y + this.size.height > obj.position.y + obj.size.height) {
+        this.position.y = obj.position.y + obj.size.height - this.size.height;
     }
 }
 

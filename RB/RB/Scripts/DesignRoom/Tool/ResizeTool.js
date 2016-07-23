@@ -27,6 +27,7 @@ function ResizeTool(position, size, displayName) {
 
 
     this.allReferanceObjs = new Array();
+    this.referanceObjsRelateResizeToolDistance=new Array();
     this.removeAllResizeRectangle = removeAllResizeRectangle;
     this.moveResizeRetangle = moveResizeRetangle;
     this.getAllReferanceObjs = resizeToolGetAllReferanceObjs;
@@ -139,24 +140,34 @@ function onResizeToolMouseDown(ev) {
     this.isChecked = true;
     this.relativeDistance.relativeDistanceX = mousePosition.position.x - this.position.x;
     this.relativeDistance.relativeDistanceY = mousePosition.position.y - this.position.y;
-    this.subObjsRelativeDistance = this.subObjs.GetRelativeDistances(mousePosition)
+    this.subObjsRelativeDistance = this.subObjs.getRelativeDistances(mousePosition)
 
     
  
-    this.referanceObjsRelativeDistance = this.allReferanceObjs.GetRelativeDistances(mousePosition);
+    this.referanceObjsRelativeDistance = this.allReferanceObjs.getRelativeDistances(mousePosition);
+    this.referanceObjsRelateResizeToolDistance=this.allReferanceObjs.getRelativeDistances(this);
     this.check();
 }
 
 function onResizeToolMouseMove(ev) {
     var mousePosition = new MousePosition(ev);
     if (this.isChecked == true) {
-        this.moveRelativeDisplacement(mousePosition.position, this.relativeDistance);
-        this.subObjs.moveRelativeDisplacement(mousePosition.position, this.subObjsRelativeDistance);
+        if (this.isInObj(currentRoom)) {
+            this.moveRelativeDisplacement(mousePosition.position, this.relativeDistance);
+            this.subObjs.moveRelativeDisplacement(mousePosition.position, this.subObjsRelativeDistance);
 
-        var allReferanceObjs = getAllReferanceObjs(this);
+            var allReferanceObjs = getAllReferanceObjs(this);
 
-        this.allReferanceObjs.moveRelativeDisplacement(mousePosition.position, this.referanceObjsRelativeDistance);
-        this.check();
+            this.onBorder(currentRoom);
+
+            this.allReferanceObjs.moveRelativeDisplacement(this.position, this.referanceObjsRelateResizeToolDistance);
+           
+
+            this.check();
+        }
+        else {
+            this.onBorder(currentRoom);
+        }
     }
     else {
 
@@ -172,37 +183,28 @@ function onResizeToolKeyDown(e) {
   
     keyCode = e.keyCode;
     this.getAllReferanceObjs();
+    this.referanceObjsRelateResizeToolDistance = this.allReferanceObjs.getRelativeDistances(this);
 
     switch (keyCode) {
         case 37://←   
             this.keyboardLeftDown();
             this.moveResizeRetangle();
-            for (var i = 0; i < this.allReferanceObjs.length; i++)
-            {
-                this.allReferanceObjs[i].keyboardLeftDown();
-            }
-           
+            this.allReferanceObjs.moveRelativeDisplacement(this.position, this.referanceObjsRelateResizeToolDistance);
             break;
         case 38://↑
             this.keyboardTopDown();
             this.moveResizeRetangle();
-            for (var i = 0; i < this.allReferanceObjs.length; i++) {
-                this.allReferanceObjs[i].keyboardTopDown();
-            }
+            this.allReferanceObjs.moveRelativeDisplacement(this.position, this.referanceObjsRelateResizeToolDistance);
             break
         case 39://→
             this.keyboardRightDown();
             this.moveResizeRetangle();
-            for (var i = 0; i < this.allReferanceObjs.length; i++) {
-                this.allReferanceObjs[i].keyboardRightDown();
-            }
+            this.allReferanceObjs.moveRelativeDisplacement(this.position, this.referanceObjsRelateResizeToolDistance);
             break
         case 40://↓
             this.keyboardButtomDown();
             this.moveResizeRetangle();
-            for (var i = 0; i < this.allReferanceObjs.length; i++) {
-                this.allReferanceObjs[i].keyboardButtomDown();
-            }
+            this.allReferanceObjs.moveRelativeDisplacement(this.position, this.referanceObjsRelateResizeToolDistance);
             break
         default:
             document.removeEventListener("keydown", keyDown, false);
