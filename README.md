@@ -1,11 +1,10 @@
 # RoomBooking
+## Room Design Tool Single Object Operate 
+![SingleOp](https://github.com/lijintian/RoomBooking/blob/master/RB/RB/Source/Introduce/SingleOp.gif) 
 * this tool base on canvas,no need flash or other 3rd plugins 
  * (此设计工具使用canvas开发，无需安装flash及第三方插件)
 * set the roomWidth & roomHeight and click Enter to create a Room
  * (设置RoomWidth、RoomHeight按Enter按钮即可生成对应大小的Room)
-##Room Design Tool Single Object Operate 
-![SingleOp](https://github.com/lijintian/RoomBooking/blob/master/RB/RB/Source/Introduce/SingleOp.gif) 
-
 * drag and drop the tool to the Stage to create concreate object
  * (直接拖拽ToolBar的Toll到Stage即可在Stage生成具体的对象)
 * drag the object to move it
@@ -17,7 +16,7 @@
 * ues keboard Delete to Delete the object
  * (使用键盘Delete删除对象)
 
-##Room Design Tool Multi Objects Operate
+## Room Design Tool Multi Objects Operate
 ![MultiOp](https://github.com/lijintian/RoomBooking/blob/master/RB/RB/Source/Introduce/MultiOp.gif)
 * drag the mouse to choice multi objects，click the align tool to align，change the property and click Enter button to change all the choosed objects property,drag to move them ,or move them width direct key
  * (拖动个鼠标选中多个对象，点击对齐工具对齐，修改属性后按Enter键来修改所有选中对象的属性,拖动或者使用方向键来移动多个选中对象)
