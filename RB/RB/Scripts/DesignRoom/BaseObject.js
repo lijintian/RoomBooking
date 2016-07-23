@@ -37,6 +37,9 @@ function BaseObject(position, size, type) {
     this.subObjsRelativeDistance = new Array();
     this.referanceObjsRelativeDistance = new Array();
     this.isChecked = false;
+    this.originPosition;
+    this.originSize;
+
 
     this.addSubObj = addSubObj;
     this.removeSubObj = removeSubObj;

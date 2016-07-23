@@ -25,6 +25,9 @@ Array.prototype.moveRelativeDisplacement = moveRelativeDisplacement
 Array.prototype.getRelativeDistances = arrayGetRelativeDistances;
 Array.prototype.getObjsInObj = arrayGetObjsInObj;
 Array.prototype.check = arrayCheck;
+Array.prototype.refreshSizeAndPosition = arrayRefreshSizeAndPosition;
+Array.prototype.setOriginPositions = arraySetOriginPositions;
+Array.prototype.setOriginSizes = arraySetOriginSizes;
 
 
 function arrayGetRelativeDistances(mousePosition)
@@ -468,4 +471,44 @@ function arrayCheck()
     for (var i = 0; i < this.length; i++) {
         this[i].check(true);
     }
+}
+
+function arrayRefreshSizeAndPosition(addWidth, addHeight,addPositionX,addPositionY)
+{
+    for (var i = 0; i < this.length; i++)
+    {
+        var newWidth= this[i].originSize.width + addWidth;
+        var newHeight=this[i].originSize.height + addHeight;
+
+        if(newWidth>0&&newHeight>0)
+        {
+            this[i].position.x = this[i].originPosition.x + addPositionX;
+            this[i].position.y = this[i].originPosition.y + addPositionY;
+            this[i].size.width =newWidth;
+            this[i].size.height = newHeight;
+        }   
+    }
+}
+
+function arraySetOriginPositions()
+{
+    var positions = new Array();
+
+    for (var i = 0; i < this.length; i++) {
+        this[i].originPosition = new Position(this[i].position.x, this[i].position.y, this[i].position.z);
+        positions.push(new Position(this[i].position.x,this[i].position.y,this[i].position.z));
+    }
+
+    return positions;
+}
+
+function arraySetOriginSizes() {
+    var sizes = new Array();
+
+    for (var i = 0; i < this.length; i++) {
+        this[i].originSize = new Size(this[i].size.width, this[i].size.height);
+        sizes.push(new Size(this[i].size.width,this[i].size.height));
+    }
+
+    return sizes;
 }

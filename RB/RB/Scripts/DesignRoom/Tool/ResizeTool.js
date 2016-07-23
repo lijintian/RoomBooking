@@ -270,6 +270,10 @@ function averageReferenceObjs(averageType)
 }
 
 function refreshPositionAndSize() {
+    this.getAllReferanceObjs();
+    //引用移除多选工具
+    this.allReferanceObjs.removeElement(new MultiChoseTool(new Position(0, 0), ""));
+
     var left = this.allReferanceObjs.findMostLeft();
     var top = this.allReferanceObjs.findMostTop();
 
@@ -288,16 +292,27 @@ function refreshPositionAndSize() {
 
 
 
-function ResizeRectangle(position, size, displayName, direct) {
+function ResizeRectangle(position, size, direct, displayName) {
     ResizeRectangle.name = "ResizeRectangle";
     var img = typeof (undefined);
     Tool.apply(this, new Array(position, size, img, ResizeRectangle.name, displayName));
     this.direct = direct;
     this.draw = drawResizeRectangle;
+    
 
-    this.onMouseDown = function () { };
-    this.onMouseMove = function () { };
-    this.onMouseUp = function () { };
+    
+    this.referanceObjsOrignPositions;
+    this.referanceObjsOrignSizes;
+   
+
+    /*----------------OverRide Begin----------------------*/
+    this.onMouseDown = onResizeRectangleMouseDown;
+    this.onMouseMove = onResizeRectangleMouseMove;
+    this.onMouseUp = onResizeRectangleMouseUp;
+
+    /*-----------------OverRide End----------------------*/
+
+    this.refreshResizeToolReferenceObjsSize = refreshResizeToolReferenceObjsSize;
 }
 
 function drawResizeRectangle() {
@@ -305,4 +320,96 @@ function drawResizeRectangle() {
         ctx.fillStyle = "white";
         ctx.strokeRect(this.position.x, this.position.y, this.size.width, this.size.height);
         ctx.fillRect(this.position.x, this.position.y, this.size.width, this.size.height);
+}
+
+
+
+function onResizeRectangleMouseDown(ev) {
+    var mousePosition = new MousePosition(ev);
+    this.originPosition = new Position(this.position.x, this.position.y, this.position.z);
+
+    this.referanceObjs = ResizeTool.unique.getAllReferanceObjs();
+
+    this.referanceObjs.setOriginPositions();
+    this.referanceObjs.setOriginSizes();
+
+    this.isChecked = true;
+    this.relativeDistance.relativeDistanceX = mousePosition.position.x - this.position.x;
+    this.relativeDistance.relativeDistanceY = mousePosition.position.y - this.position.y;
+}
+
+function onResizeRectangleMouseMove(ev) {
+    var mousePosition = new MousePosition(ev);
+    if (this.isChecked == true) {
+        this.moveRelativeDisplacement(mousePosition.position, this.relativeDistance);
+        this.refreshResizeToolReferenceObjsSize();
     }
+    else {
+
+    }
+}
+
+function onResizeRectangleMouseUp(ev) {
+    var mousePosition = new MousePosition(ev);
+    this.isChecked = false;
+}
+
+
+function refreshResizeToolReferenceObjsSize()
+{
+    var resizeWidth=0;
+    var resizeHeight=0;
+    switch (this.direct)
+    {
+        case 0:
+            resizeWidth = this.originPosition.x - this.position.x;
+            resizeHeight = this.originPosition.y - this.position.y;
+
+            this.referanceObjs.refreshSizeAndPosition(resizeWidth, resizeHeight, -resizeWidth, -resizeHeight);
+          
+            break;
+        case 1:
+            resizeWidth = 0;
+            resizeHeight = this.originPosition.y - this.position.y;
+            this.referanceObjs.refreshSizeAndPosition(resizeWidth, resizeHeight, 0, -resizeHeight);
+
+            break;
+        case 2:
+            resizeWidth = this.position.x - this.originPosition.x;
+            resizeHeight = this.position.y-this.originPosition.y ;
+
+            this.referanceObjs.refreshSizeAndPosition(resizeWidth, -resizeHeight, 0, resizeHeight);
+            break;
+        case 3:
+            resizeWidth = this.position.x - this.originPosition.x;
+            resizeHeight = 0;
+            this.referanceObjs.refreshSizeAndPosition(resizeWidth, resizeHeight, 0, 0);
+
+            break;
+        case 4:
+            resizeWidth = this.position.x - this.originPosition.x;
+            resizeHeight = this.position.y - this.originPosition.y;
+
+            this.referanceObjs.refreshSizeAndPosition(resizeWidth, resizeHeight, 0, 0);
+            break;
+        case 5:
+            resizeWidth = 0;
+            resizeHeight = this.position.y- this.originPosition.y;
+            this.referanceObjs.refreshSizeAndPosition(resizeWidth, resizeHeight, 0, 0);
+            break;
+        case 6:
+            resizeWidth = this.position.x - this.originPosition.x;
+            resizeHeight = this.position.y - this.originPosition.y;
+
+            this.referanceObjs.refreshSizeAndPosition(-resizeWidth, resizeHeight, resizeWidth, 0);
+            break;
+            break;
+        case 7:
+            resizeWidth = this.originPosition.x - this.position.x;
+            resizeHeight = 0;
+            this.referanceObjs.refreshSizeAndPosition(resizeWidth, resizeHeight, -resizeWidth, 0);
+            break;
+    }
+    ResizeTool.unique.showReferenceObjsProperty();
+    ResizeTool.unique.refreshPositionAndSize();
+}
