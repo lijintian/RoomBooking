@@ -22,7 +22,11 @@
     <script src="~/Scripts/DesignRoom/Tool/DeskTool.js"></script>
     <script src="~/Scripts/DesignRoom/Tool/MultiChoseTool.js"></script>
     <script src="~/Scripts/DesignRoom/Tool/ResizeTool.js"></script>
-    <script src="~/Scripts/DesignRoom/Equipment.js"></script>
+    <script src="~/Scripts/DesignRoom/Tool/CalculateTool.js"></script>
+    <script src="~/Scripts/DesignRoom/Tool/ShowAndHideTool.js"></script>
+    <script src="~/Scripts/DesignRoom/Equipment/Equipment.js"></script>
+    <script src="~/Scripts/DesignRoom/Equipment/Chair.js"></script>
+    <script src="~/Scripts/DesignRoom/Equipment/Desk.js"></script>
     <script src="~/Scripts/DesignRoom/Room.js"></script>
     <script type="text/javascript">
         /*===========================================================================================================================*/
@@ -30,7 +34,7 @@
         //Global Variable Begin
         var showObjType = true;
         var sourceCount = 0;
-        var totalSourceCount = 8;
+        var totalSourceCount = 10;
         var loadingInterval;
 
 
@@ -332,6 +336,8 @@
             <img src="~/Source/topAlign.png" width="0" height="0"/>
             <img src="~/Source/horizonAverage.png" width="0" height="0"/>
             <img src="~/Source/verticalAverage.png" width="0" height="0"/>
+            <img id="imgHide" src="~/Source/hide.png" width="0" height="0"/>
+            <img id="imgShow" src="~/Source/show.png" width="0" height="0"/>
             <script>
                 $("img").each(function () {
                     this.onload = function () {

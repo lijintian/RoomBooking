@@ -39,6 +39,7 @@ function BaseObject(position, size, type) {
     this.isChecked = false;
     this.originPosition;
     this.originSize;
+    this._isShow = true;
 
 
     this.addSubObj = addSubObj;

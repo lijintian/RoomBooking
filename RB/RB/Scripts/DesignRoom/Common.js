@@ -338,6 +338,20 @@ function generateTools() {
         toolY += toolIcon.height + toolBar.padding;
     }
 
+    //计算数量工具
+    var calSize = new Size(50, 60);
+    var calPosition = new Position(currentRoom.position.x + currentRoom.size.width - calSize.width, currentRoom.position.y + currentRoom.size.height - calSize.height, currentRoom.position.z + 1);
+    var calculateTool = new CalculateTool(calPosition,calSize,"");
+    everything.push(calculateTool);
+
+    //计算数量工具隐藏展示按钮
+    var shSize = new Size(10, 10);
+    var shPosition = new Position(calculateTool.position.x + calculateTool.size.width - shSize.width-2, calculateTool.position.y - shSize.height/2, calculateTool.position.z + 1);
+    var shReferanceObjs=new Array();
+    shReferanceObjs.push(calculateTool);
+    var showOrHideCalTool = new ShowAndHideTool(shPosition, shSize, shReferanceObjs);
+    everything.push(showOrHideCalTool);
+
 }
 
 
@@ -466,6 +480,7 @@ function showCursor(ev)
                         case ResizeTool.name:
                         case ChairTool.name:
                         case DeskTool.name:
+                        case ShowAndHideTool.name:
                             canvas.style.cursor = "pointer";
                             break;
                         case ResizeRectangle.name:

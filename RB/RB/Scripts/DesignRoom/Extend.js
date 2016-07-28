@@ -28,7 +28,21 @@ Array.prototype.check = arrayCheck;
 Array.prototype.refreshSizeAndPosition = arrayRefreshSizeAndPosition;
 Array.prototype.setOriginPositions = arraySetOriginPositions;
 Array.prototype.setOriginSizes = arraySetOriginSizes;
+Array.prototype.show = fArrayShow;
+Array.prototype.hide = fArrayHide;
 
+function fArrayShow()
+{
+    for (var i = 0; i < this.length; i++) {
+        this[i]._isShow = true;
+    }
+}
+
+function fArrayHide() {
+    for (var i = 0; i < this.length; i++) {
+        this[i]._isShow = false;
+    }
+}
 
 function arrayGetRelativeDistances(mousePosition)
 {
