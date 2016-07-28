@@ -510,3 +510,22 @@ function showCursor(ev)
         }
     }
 }
+
+function fCopyAndPasteInit() {
+    fSetCurrentOpObj();
+    hideProperty();
+    hideMultiEditBar();
+}
+
+function fSetCurrentOpObj()
+{
+    //如果有ResizeTool则以ResizeTool为CurrentOpObj
+    for (var i = 0; i < everything.length; i++) {
+        if (everything[i].type == Tool.name) {
+            if (everything[i].toolType == ResizeTool.name) {
+                currentOpObj = ResizeTool.unique;
+            }
+        }
+    }
+
+}

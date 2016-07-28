@@ -22,7 +22,9 @@ function ResizeTool(position, size, displayName) {
     this.onKeyDown = onResizeToolKeyDown;
 
     this.resizeRectangles = this.subObjs;
-    this.addResizeRectangle = this.addSubObj; 
+    this.addResizeRectangle = this.addSubObj;
+    this.clone = fResizeToolClone;
+    
     /*----------------------OverRide End------------------------------*/
 
 
@@ -91,6 +93,19 @@ function ResizeTool(position, size, displayName) {
     ResizeTool.unique = this;
 }
 
+function fResizeToolMoveTo(pointPosition)
+{
+    this.referanceObjsRelateResizeToolDistance = this.allReferanceObjs.getRelativeDistances(this);
+}
+
+function fResizeToolClone()
+{
+    this.getAllReferanceObjs();
+   
+    var referanceObjsClone = this.allReferanceObjs.clone();
+    return referanceObjsClone;
+}
+
 function drawResizeTool() {
     ctx.strokeStyle = "lightblue";
     ctx.strokeRect(this.position.x, this.position.y, this.size.width, this.size.height);
@@ -132,6 +147,7 @@ function removeAllResizeRectangle() {
 function resizeToolGetAllReferanceObjs()
 {
     this.allReferanceObjs = getAllReferanceObjs(this);
+    this.allReferanceObjs.removeElement(new MultiChoseTool(new Position(0, 0), ""));
     return this.allReferanceObjs;
 }
 
@@ -143,7 +159,7 @@ function onResizeToolMouseDown(ev) {
     this.subObjsRelativeDistance = this.subObjs.getRelativeDistances(mousePosition)
 
     
- 
+  
     this.referanceObjsRelativeDistance = this.allReferanceObjs.getRelativeDistances(mousePosition);
     this.referanceObjsRelateResizeToolDistance=this.allReferanceObjs.getRelativeDistances(this);
     this.check();
@@ -154,7 +170,7 @@ function onResizeToolMouseMove(ev) {
     if (this.isChecked == true) {
         if (this.isInObj(currentRoom)) {
             this.moveRelativeDisplacement(mousePosition.position, this.relativeDistance);
-            this.subObjs.moveRelativeDisplacement(mousePosition.position, this.subObjsRelativeDistance);
+            //this.subObjs.moveRelativeDisplacement(mousePosition.position, this.subObjsRelativeDistance);
 
             var allReferanceObjs = getAllReferanceObjs(this);
 
@@ -227,7 +243,7 @@ function showReferenceObjsProperty()
 {
     this.getAllReferanceObjs();
     //引用移除多选工具
-    this.allReferanceObjs.removeElement(new MultiChoseTool(new Position(0,0),""));
+    //this.allReferanceObjs.removeElement(new MultiChoseTool(new Position(0,0),""));
 
     if (this.allReferanceObjs.length > 1) {//多选
         showMultiEditBar(this.allReferanceObjs);
@@ -239,7 +255,7 @@ function showReferenceObjsProperty()
 
 function effectReferenceObjsProperty() {
     this.getAllReferanceObjs();
-    this.allReferanceObjs.removeElement(new MultiChoseTool(new Position(0, 0), ""));
+    //this.allReferanceObjs.removeElement(new MultiChoseTool(new Position(0, 0), ""));
 
     if (this.allReferanceObjs.length > 1) {//多选
         effectMultiEdit(this.allReferanceObjs);
@@ -272,7 +288,7 @@ function averageReferenceObjs(averageType)
 function refreshPositionAndSize() {
     this.getAllReferanceObjs();
     //引用移除多选工具
-    this.allReferanceObjs.removeElement(new MultiChoseTool(new Position(0, 0), ""));
+    //this.allReferanceObjs.removeElement(new MultiChoseTool(new Position(0, 0), ""));
 
     var left = this.allReferanceObjs.findMostLeft();
     var top = this.allReferanceObjs.findMostTop();

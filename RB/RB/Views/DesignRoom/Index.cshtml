@@ -44,6 +44,9 @@
         var toolIcon
         var currentOpObj;
 
+        var currentMousePoint;
+        var currentCopyObjs;
+
 
         
 
@@ -72,7 +75,8 @@
         /*===========================================================================================================================*/
 
         //Keyboard And Mouse Event Begin
-        var preventDefaultKeyCode = [37, 38, 39, 40,46, 89, 90];
+                                    //← ↑ → ↓ Delete c v y Z  
+        var preventDefaultKeyCode = [37,38,39,40,46,67,86,89,90];
 
         function keyDown(ev) {
             var e = ev || window.event;
@@ -100,7 +104,16 @@
                             keyboardCtrlZDown();
                         }
                         break;
-
+                    case 67://c
+                        if (e.ctrlKey)
+                        {
+                            keyboardCtrlCDown();
+                        }
+                        break;
+                    case 86://v
+                        if (e.ctrlKey) {
+                            keyboardCtrlVDown();
+                        }
                     default:
                         document.removeEventListener("keydown", keyDown, false);
                         break
@@ -122,8 +135,40 @@
             drawEverything();
         }
 
+        function keyboardCtrlCDown() {
+            if (currentOpObj instanceof ResizeTool) {
+                currentCopyObjs = currentOpObj.clone();
+                fCopyAndPasteInit()
+                currentMousePoint = null;
+            }
+        }
+
+        function keyboardCtrlVDown() {
+            if (currentCopyObjs != null && currentCopyObjs.length > 0) {
+                var actualCopyObjs = currentCopyObjs.clone();
+                var multiChooseTool = new MultiChoseTool(new Position(0, 0), "");
+                multiChooseTool.setCheckedObjs(actualCopyObjs);
+                everything.pushElements(actualCopyObjs);
+                multiChooseTool.check();
+                var relateDistance = ResizeTool.unique.allReferanceObjs.getRelativeDistances(ResizeTool.unique);
+                if (currentMousePoint == null) {
+                    ResizeTool.unique.moveTo(ResizeTool.unique.position.x + 5, ResizeTool.unique.position.y + 5);
+                }
+                else {
+                    ResizeTool.unique.moveTo(currentMousePoint.position.x, currentMousePoint.position.y);
+                }
+                ResizeTool.unique.onBorder(currentRoom);
+                ResizeTool.unique.check();
+                ResizeTool.unique.allReferanceObjs.moveRelativeDisplacement(ResizeTool.unique.position, relateDistance);
+                fCopyAndPasteInit();
+            }
+        }
+
         function mouseDown(ev) {
             var mousePosition = new MousePosition(ev);
+       
+            currentMousePoint = mousePosition;
+           
             everything.sortByPositionZ();//z值高的总在数组后边
 
             for (var i = everything.length - 1; i >= 0; i--) {//从数据后往前找选中的对象    
@@ -154,18 +199,7 @@
                 currentOpObj.onMouseUp(ev);
             }
 
-            //如果有ResizeTool则以ResizeTool为CurrentOpObj
-            for (var i = 0; i < everything.length; i++)
-            { 
-                if (everything[i].type == Tool.name)
-                {
-                    if (everything[i].toolType == ResizeTool.name)
-                    {
-                        currentOpObj = ResizeTool.unique;
-                    }
-                }
-            }
-
+            fSetCurrentOpObj();
             RecordStap();
             drawEverything();
         }
@@ -273,6 +307,8 @@
             <input type="button" value="→" onclick="var e = new Object(); e.keyCode = 39; currentOpObj.onKeyDown(e); drawEverything(); RecordStap();" />
             <input type="button" value="↓" onclick="var e = new Object(); e.keyCode = 40; currentOpObj.onKeyDown(e); drawEverything(); RecordStap();" />
             <input type="button" value="Delete" onclick="var e = new Object(); e.keyCode = 46; currentOpObj.onKeyDown(e); drawEverything(); RecordStap();" />
+            <input type="button" value="Ctrl+c" onclick="keyboardCtrlCDown(); drawEverything();" />
+            <input type="button" value="Ctrl+v" onclick="keyboardCtrlVDown(); drawEverything();" />
 
         </div>
 
