@@ -221,6 +221,7 @@
     <Content Include="Source\Chair.png" />
     <Content Include="Source\Desk.png" />
     <Content Include="Source\buttomAlign.png" />
+    <Content Include="Source\Introduce\Copy.gif" />
     <Content Include="Source\show.png" />
     <Content Include="Source\horizonAverage.png" />
     <Content Include="Source\Introduce\MultiOp.gif" />
