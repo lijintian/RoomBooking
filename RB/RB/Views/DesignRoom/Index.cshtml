@@ -150,6 +150,7 @@
         function keyboardCtrlVDown() {
             if (currentCopyObjs != null && currentCopyObjs.length > 0) {
                 var actualCopyObjs = currentCopyObjs.clone();
+                actualCopyObjs.newId();//Clone的对象重新设置ID
                 var multiChooseTool = new MultiChoseTool(new Position(0, 0), "");
                 multiChooseTool.setCheckedObjs(actualCopyObjs);
                 everything.pushElements(actualCopyObjs);

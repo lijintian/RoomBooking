@@ -30,6 +30,15 @@ Array.prototype.setOriginPositions = arraySetOriginPositions;
 Array.prototype.setOriginSizes = arraySetOriginSizes;
 Array.prototype.show = fArrayShow;
 Array.prototype.hide = fArrayHide;
+Array.prototype.newId = fArrayNewId;
+
+function fArrayNewId()
+{
+    for (var i = 0; i < this.length; i++)
+    {
+        this[i].id = guid.newGUID();
+    }
+}
 
 function fArrayShow()
 {
