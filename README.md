@@ -24,3 +24,10 @@
  * (多选支持平均间距)
 * drag and resize the all the choosed objects 
  * (拖动ReSize工具改变所有被选中对象的大小)
+
+## Room Design Tool New Feature
+![MultiOp](https://github.com/lijintian/RoomBooking/blob/master/RB/RB/Source/Introduce/Copy.gif)
+* support copy and paste
+ * (支持复制粘贴)
+* support calculate equipments count
+ * (支持计算设备数量)
