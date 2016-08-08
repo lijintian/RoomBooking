@@ -241,8 +241,8 @@ function load() {
     else {
         window.clearInterval(loadingInterval);
         window.setTimeout(hideLoading, 1000);
-        generateRoom();
-        drawEverything();
+        //generateDesignRoomTool();
+        generateRoom(); 
     }
 }
 
@@ -302,6 +302,70 @@ function generateRoom() {
     everything.push(currentRoom);
 
     //currentRoom.draw();
+
+    generateTools();
+    drawEverything();
+    return false;
+}
+
+
+//生产room
+function generateDesignRoomTool() {
+    //重新生成要清空everything
+    everything = new Array();     
+
+    var canvasWidth = document.body.clientWidth-5;
+    var canvasHeight = document.body.clientHeight-5;
+    $(canvas).attr("width", canvasWidth);
+    $(canvas).attr("height", canvasHeight);
+
+    //创建一个ToolBar
+    var toolBarPadding = 10;
+    var toolBarPosition = new Position(10, 10);
+    var toolBarSize = new Size(50, canvasHeight-2*toolBarPadding);
+    toolBar = new ToolBar(toolBarPosition, toolBarSize, toolBarPadding);
+    everything.push(toolBar);
+
+
+    //创建Stage
+    var stagePadding = 10;
+    var stageWidth = canvasWidth - 2 * stagePadding-2*toolBarPadding-toolBar.size.width;
+    var stageHeight = canvasHeight -2 * stagePadding;
+    var stagePosition = new Position(toolBar.size.width+2*toolBarPadding+stagePadding, stagePadding);
+    var stageSize = new Size(stageWidth, stageHeight);
+    stage = new Stage(stagePosition, stageSize, stagePadding);
+    everything.push(stage);
+
+   
+    //创建Room
+    var width = $("#txtRoomWidth").val();
+    var height = $("#txtRoomHeight").val();
+
+    if (width.trim() != "") {
+        width = new Number(width);
+    }
+    else {
+        width = 0;
+    }
+    if (height.trim() != "") {
+        height = new Number(height);
+    }
+    else {
+        height = 0;
+    }
+
+    var roomWidth = stageWidth-2*stage.padding;
+    var roomHeight = stageHeight-2*stage.padding;
+
+    if (roomHeight > stage.size.height || roomWidth > stage.size.width)
+    {
+        return;
+    }
+
+    var roomPosition = new Position(stage.position.x + (stage.size.width - roomWidth) / 2, stage.position.y + (stage.size.height - roomHeight) / 2);
+    var roomSize = new Size(roomWidth, roomHeight);
+    currentRoom = new Room(roomPosition, roomSize);
+    everything.push(currentRoom);
 
     generateTools();
     return false;

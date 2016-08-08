@@ -95,7 +95,7 @@ function arrayClone() {
 
     for (var i = 0; i < this.length; i++) {
 
-        if (this[i] instanceof ResizeTool || this[i] instanceof ResizeRectangle || this[i] instanceof MultiChoseTool)
+        if (this[i] instanceof ResizeTool || this[i] instanceof ResizeRectangle || this[i] instanceof MultiChoseTool )
         {//ResizeTool、ResizeRectangle、MultiChoseTool不Copy
             continue;
         }

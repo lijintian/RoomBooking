@@ -1,10 +1,12 @@
 ﻿function CalculateTool(position, size, displayName) {
     CalculateTool.name = "CalculateTool";//兼容IE
 
-    if (CalculateTool.unique != undefined)
+    /*if (CalculateTool.unique != undefined)
     {
+        CalculateTool.unique.size = new Size(size.width, size.height);
+        CalculateTool.unique.position = new Position(position.x, position.y, position.z);
         return CalculateTool.unique;
-    }
+    }*/
 
     Tool.apply(this, new Array(position, size, null, CalculateTool.name, displayName));
 
@@ -16,7 +18,7 @@
     this.draw = fDrawCalculateTool;
     /*---------------Override  End--------------------*/
 
-    CalculateTool.unique = this;
+    //CalculateTool.unique = this;
 }
 
 function fDrawCalculateTool()
