@@ -31,6 +31,14 @@ Array.prototype.setOriginSizes = arraySetOriginSizes;
 Array.prototype.show = fArrayShow;
 Array.prototype.hide = fArrayHide;
 Array.prototype.newId = fArrayNewId;
+Array.prototype.setAngle = fArraySetAngle;
+
+function fArraySetAngle(angle)
+{
+    for (var i = 0; i < this.length; i++) {
+        this[i]._revolveAngle = angle;
+    }
+}
 
 function fArrayNewId()
 {
@@ -95,7 +103,7 @@ function arrayClone() {
 
     for (var i = 0; i < this.length; i++) {
 
-        if (this[i] instanceof ResizeTool || this[i] instanceof ResizeRectangle || this[i] instanceof MultiChoseTool )
+        if (this[i] instanceof ResizeTool || this[i] instanceof ResizeRectangle || this[i] instanceof MultiChoseTool || this[i] instanceof RevolveCircle)
         {//ResizeTool、ResizeRectangle、MultiChoseTool不Copy
             continue;
         }

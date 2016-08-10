@@ -40,6 +40,7 @@ function BaseObject(position, size, type) {
     this.originPosition;
     this.originSize;
     this._isShow = true;
+    this._revolveAngle=0;//旋转弧度
 
 
     this.addSubObj = addSubObj;
@@ -154,7 +155,15 @@ function isInObj(obj) {
 
 function drawObj() {
     if (typeof (this.img) != "undefined") {
-        ctx.drawImage(this.img, this.position.x, this.position.y, this.size.width, this.size.height);
+        if (this._revolveAngle != undefined)
+        {
+            ctx.save();
+            ctx.translate(this.position.x+this.size.width/2, this.position.y+this.size.height/2);
+            ctx.rotate(this._revolveAngle);
+            ctx.drawImage(this.img, -this.size.width/2, -this.size.height/2, this.size.width, this.size.height);
+            ctx.restore();
+        }
+        
     }
     this.drawName();
 }
@@ -214,6 +223,7 @@ function checkObj() {
     else {
         resizeTool.referanceObjs = new Array();
         resizeTool.addReferanceObj(this);
+        resizeTool.moveResizeRetangle();
         everything.pushElement(resizeTool);
         everything.pushElements(resizeTool.resizeRectangles);
         

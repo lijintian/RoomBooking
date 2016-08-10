@@ -1,5 +1,5 @@
 ﻿
-/*
+/**
 @method 拉伸大小工具,单例
 @param {Position} position 位置信息
 */
@@ -81,6 +81,25 @@ function ResizeTool(position, size, displayName) {
     var resizeRetangle7 = new ResizeRectangle(position7, size7, 7);
     this.addResizeRectangle(resizeRetangle7);
 
+    //旋转按钮
+    var pathCircleRadius = this.size.width > this.size.height ? this.size.width : this.size.height;
+    var size8 = new Size(20, 20);
+    var position8 = new Position(this.position.x + this.size.width / 2 + pathCircleRadius - size8.width / 2, this.position.y + this.size.height / 2 - size8.height / 2, 1001);
+    
+    this.getAllReferanceObjs();
+    if(this.allReferanceObjs.length==1)
+    {
+        var circleCenterPosition = new Position(this.position.x + this.size.width / 2, this.position.y + this.size.height / 2);
+        var sinValue = this.allReferanceObjs[0]._revolveAngle;
+        var cutPoint = fGetCirclleCutPointBySinValue(circleCenterPosition, sinValue, pathCircleRadius);
+        position8 = new Position(cutPoint.x - size8.width / 2, cutPoint.y- size8.height / 2, 1001);
+    }
+   
+
+    var revoleCircle = new RevolveCircle(position8, size8, pathCircleRadius, "");
+    this.addResizeRectangle(revoleCircle);
+    
+
     everything.pushElement(resizeRetangle0);
     everything.pushElement(resizeRetangle1);
     everything.pushElement(resizeRetangle2);
@@ -89,6 +108,7 @@ function ResizeTool(position, size, displayName) {
     everything.pushElement(resizeRetangle5);
     everything.pushElement(resizeRetangle6);
     everything.pushElement(resizeRetangle7);
+    everything.pushElement(revoleCircle);
 
     ResizeTool.unique = this;
 }
@@ -138,6 +158,19 @@ function moveResizeRetangle() {
     //左中点
     var position7 = new Position(this.position.x - retangleRadius, this.position.y + this.size.height / 2 - retangleRadius, 1001);
     this.resizeRectangles[7].position = position7;
+
+    var pathCircleRadius = this.size.width > this.size.height ? this.size.width : this.size.height;
+    var size8 = new Size(20, 20);
+    var position8 = new Position(this.position.x + this.size.width / 2 + pathCircleRadius - size8.width / 2, this.position.y + this.size.height / 2 - size8.height / 2, 1001);
+    this.getAllReferanceObjs();
+    if (this.allReferanceObjs.length == 1) {
+        var circleCenterPosition = new Position(this.position.x + this.size.width / 2, this.position.y + this.size.height / 2);
+        var sinValue = this.allReferanceObjs[0]._revolveAngle;
+        var cutPoint = fGetCirclleCutPointBySinValue(circleCenterPosition, sinValue, pathCircleRadius);
+        position8 = new Position(cutPoint.x - size8.width / 2, cutPoint.y - size8.height / 2, 1001);
+    }
+    this.resizeRectangles[8].position = position8;
+    this.resizeRectangles[8]._pathCircleRadius = pathCircleRadius;
 }
 
 function removeAllResizeRectangle() {
@@ -307,7 +340,10 @@ function refreshPositionAndSize() {
 
 
 
-
+/**
+@method 调整大小方形按钮
+@param {Position} position 位置信息
+*/
 function ResizeRectangle(position, size, direct, displayName) {
     ResizeRectangle.name = "ResizeRectangle";
     var img = typeof (undefined);
@@ -337,8 +373,6 @@ function drawResizeRectangle() {
         ctx.strokeRect(this.position.x, this.position.y, this.size.width, this.size.height);
         ctx.fillRect(this.position.x, this.position.y, this.size.width, this.size.height);
 }
-
-
 
 function onResizeRectangleMouseDown(ev) {
     var mousePosition = new MousePosition(ev);
@@ -429,3 +463,99 @@ function refreshResizeToolReferenceObjsSize()
     ResizeTool.unique.showReferenceObjsProperty();
     ResizeTool.unique.refreshPositionAndSize();
 }
+
+/**
+@method 旋转圆形按钮
+*/
+function RevolveCircle(position, size,pathCircleRadius, displayName) {
+    RevolveCircle.name = "RevolveCircular";
+    var img = typeof (undefined);
+    Tool.apply(this, new Array(position, size, img, RevolveCircle.name, displayName));
+    this.draw = fDrawRevolveCircle;
+    this._circleRadius = this.size.width / 2;
+    this._pathCircleRadius = pathCircleRadius
+
+
+    this.referanceObjsOrignPositions;
+    this.referanceObjsOrignSizes;
+
+
+    /*----------------OverRide Begin----------------------*/
+    this.onMouseDown = onRevolveCircleMouseDown;
+    this.onMouseMove = onRevolveCircleMouseMove;
+    this.onMouseUp = onRevolveCircleMouseUp;
+
+    /*-----------------OverRide End----------------------*/
+
+    this.refreshResizeToolReferenceObjsAngle = fRefreshResizeToolReferenceObjsAngle;
+}
+
+function fDrawRevolveCircle()
+{
+    ctx.beginPath();
+    //this._circleRadius=this.size.width / 2;
+    ctx.arc(this.position.x + this._circleRadius, this.position.y + this._circleRadius, this._circleRadius, 0, Math.PI * 2, true);
+    ctx.closePath();
+    ctx.strokeStyle = 'red';
+    ctx.stroke();
+    
+    ctx.beginPath();
+  
+    ctx.arc(ResizeTool.unique.position.x + ResizeTool.unique.size.width / 2, ResizeTool.unique.position.y + ResizeTool.unique.size.height/2, this._pathCircleRadius, 0, Math.PI * 2, true);
+    ctx.closePath();
+
+    ctx.strokeStyle = 'lightblue';
+    ctx.stroke();
+}
+
+function onRevolveCircleMouseDown(ev) {
+    var mousePosition = new MousePosition(ev);
+    this.originPosition = new Position(this.position.x, this.position.y, this.position.z);
+
+    this.referanceObjs = ResizeTool.unique.getAllReferanceObjs();
+
+    this.referanceObjs.setOriginPositions();
+    this.referanceObjs.setOriginSizes();
+
+    this.isChecked = true;
+    this.relativeDistance.relativeDistanceX = mousePosition.position.x - this.position.x;
+    this.relativeDistance.relativeDistanceY = mousePosition.position.y - this.position.y;
+}
+
+function onRevolveCircleMouseMove(ev) {
+    var mousePosition = new MousePosition(ev);
+    if (this.isChecked == true) {
+        var centerPoint = new Position(ResizeTool.unique.position.x + ResizeTool.unique.size.width / 2, ResizeTool.unique.position.y + ResizeTool.unique.size.height / 2);
+        var connectPoint = new Position(mousePosition.position.x, mousePosition.position.y);
+        //var circleRadius = ResizeTool.unique.size.width > ResizeTool.unique.size.height ? ResizeTool.unique.size.width : ResizeTool.unique.size.height;
+     
+        var cutPoint = fGetCirclleCutPoint(centerPoint, connectPoint, this._pathCircleRadius);
+
+        this.moveTo(cutPoint.x - this._circleRadius, cutPoint.y - this._circleRadius);
+        this.refreshResizeToolReferenceObjsAngle(centerPoint, cutPoint, this._pathCircleRadius);
+    }
+    else {
+
+    }
+}
+
+function onRevolveCircleMouseUp(ev) {
+    var mousePosition = new MousePosition(ev);
+    this.isChecked = false;
+}
+
+//刷新关联对象角度
+function fRefreshResizeToolReferenceObjsAngle(centerPoint, cutPoint, radius)
+{
+    var angle = 0;
+    if (cutPoint.x > centerPoint.x) {
+        angle = Math.asin((cutPoint.y - centerPoint.y) / radius);
+    }
+    else {
+        angle = Math.acos((cutPoint.y - centerPoint.y) / radius)+Math.PI/2;
+    }
+    
+    this.referanceObjs.setAngle(angle);   
+}
+
+

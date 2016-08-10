@@ -404,7 +404,7 @@ function generateTools() {
 
     //计算数量工具
     var calSize = new Size(50, 60);
-    var calPosition = new Position(currentRoom.position.x + currentRoom.size.width - calSize.width, currentRoom.position.y + currentRoom.size.height - calSize.height, currentRoom.position.z + 1);
+    var calPosition = new Position(currentRoom.position.x + currentRoom.size.width - calSize.width, currentRoom.position.y + currentRoom.size.height - calSize.height, currentRoom.position.z);
     var calculateTool = new CalculateTool(calPosition,calSize,"");
     everything.push(calculateTool);
 
@@ -607,4 +607,71 @@ function fSetCurrentOpObj()
         }
     }
 
+}
+
+
+/**
+@method 获取圆心与任一点连线与圆的交点
+@param {Position} circleCenterPoint 圆心
+@param {Position} connectPoint 要连接的点
+@param {Int} circleRadius 半径
+@return {Position}  交点位置
+*/
+function fGetCirclleCutPoint(circleCenterPoint, connectPoint, circleRadius)
+{
+    var x1=circleCenterPoint.x;
+    var y1=circleCenterPoint.y;
+
+    var x2=connectPoint.x;
+    var y2 = connectPoint.y;
+
+    var x3 = 0, y3 = 0;
+
+    //(y2 - y1) / Math.sqrt(Math.pow((y2 - y1), 2) + Math.pow((x2 - x1), 2))=(y3-y1)/circleRadius
+    y3 = ((y2 - y1) / Math.sqrt(Math.pow((y2 - y1), 2) + Math.pow((x2 - x1), 2))) * circleRadius + y1;
+
+    //(x2 - x1) / Math.sqrt(Math.pow((y2 - y1), 2) + Math.pow((x2 - x1), 2))=(x3-x1)/circleRadius
+    x3 = ((x2 - x1) / Math.sqrt(Math.pow((y2 - y1), 2) + Math.pow((x2 - x1), 2))) * circleRadius + x1;
+
+    return new Position(x3,y3);
+}
+
+
+/**
+@method 已知道圆心，半径，sin值，求切点
+@param {Position} circleCenterPoint 圆心
+@param {Int} sinValue 要连接的点
+@param {Int} circleRadius 半径
+@return {Position}  交点位置
+*/
+function fGetCirclleCutPointBySinValue(circleCenterPoint, sinValue, circleRadius) {
+    var x1 = circleCenterPoint.x;
+    var y1 = circleCenterPoint.y;
+
+    var x2= 0, y2 = 0;
+
+
+    if (sinValue >= Math.PI / 2 && sinValue <= 3 *2* Math.PI / 4) {//左半圆
+        // angle = Math.acos((cutPoint.y - centerPoint.y) / radius)+Math.PI/2;
+        y2 = (sinValue - Math.PI / 2) * circleRadius + y1;
+        /*if (y2 >= y1 + circleRadius) {
+            x2 = x1;
+        }
+        else {*/
+            x2 = x1 - Math.sqrt(Math.pow(circleRadius, 2) - Math.pow(Math.abs((y2 - y1)), 2));
+        //}
+        
+    }
+    else {//右半圆
+        //angle = Math.asin((cutPoint.y - centerPoint.y) / radius);
+        y2 = sinValue * circleRadius + y1;
+        x2 = Math.sqrt(Math.pow(circleRadius, 2) - Math.pow((y2 - y1), 2)) + x1
+    }
+    //(y2 - y1) /circleRadius =sinValue;
+    //y2 = sinValue * circleRadius + y1;
+
+    //Math.sqrt(Math.pow(circleRadius,2)-Math.pow((y2 - y1), 2))= x2-x1
+    // x2=Math.sqrt(Math.pow(circleRadius, 2) - Math.pow((y2 - y1), 2)) + x1
+
+    return new Position(x2, y2);
 }
