@@ -46,8 +46,8 @@ function showProperty(currentCheckedObj) {
                 var position = currentCheckedObj.position;
                 var size = currentCheckedObj.size;
 
-                $("#divProperty").css("left", position.x + size.width + canvas.offsetLeft);
-                $("#divProperty").css("top", position.y + size.height + canvas.offsetTop);
+                $("#divProperty").css("left", position.x + size.width +10+ canvas.offsetLeft);
+                $("#divProperty").css("top", position.y + size.height +10+ canvas.offsetTop);
 
                 $("#txtPositionX").val(position.x - currentRoom.position.x);
                 $("#txtPositionY").val(position.y - currentRoom.position.y);
@@ -57,6 +57,14 @@ function showProperty(currentCheckedObj) {
 
                 $("#txtId").val(currentCheckedObj.id);
                 $("#txtDisplayName").val(currentCheckedObj.displayName);
+
+                var angleVal = (currentCheckedObj._revolveAngle * 360) / (2 * Math.PI);
+                if (angleVal < 0)
+                {
+                    angleVal = 360 + angleVal;
+                }
+
+                $("#txtAngle").val(angleVal);
 
                 $("#divProperty").show();
                 break;
@@ -92,6 +100,8 @@ function effectProperty(currentCheckedObj) {
                 var id = $("#txtId").val();
                 var displayName = $("#txtDisplayName").val();
 
+                var angle = $("#txtAngle").val();
+
                 var equipment = new Equipment(new Position(newPositionX, newPositionY), new Size(newSizeWidth, newSizeHeight), null, null);
                 if (equipment.isInObj(currentRoom)) {//新的坐标在room内才生效
                     currentCheckedObj.position.x = newPositionX;
@@ -101,7 +111,17 @@ function effectProperty(currentCheckedObj) {
                     currentCheckedObj.size.height = newSizeHeight;
                     currentCheckedObj.id = id;
                     currentCheckedObj.displayName = displayName;
-  
+                     
+                    if (angle >= 0 && angle <= 270) {
+                        currentCheckedObj._revolveAngle = angle * Math.PI / 180;
+                    }
+                    else {
+                        if (angle > 270 && angle <= 360)
+                        {
+                            angle=-(360-angle)
+                            currentCheckedObj._revolveAngle = angle * Math.PI / 180;
+                        }
+                    }
                     //showProperty(currentCheckedObj);
 
                     RecordStap();
@@ -128,8 +148,8 @@ function showMultiEditBar(currentMultiCheckObjs) {
         var position = ResizeTool.unique.position;
         var size = ResizeTool.unique.size;
 
-        $("#divMultiTool").css("left", position.x + size.width + canvas.offsetLeft);
-        $("#divMultiTool").css("top", position.y + size.height + canvas.offsetTop);
+        $("#divMultiTool").css("left", position.x + size.width +10+ canvas.offsetLeft);
+        $("#divMultiTool").css("top", position.y + size.height +10+ canvas.offsetTop);
 
         if (currentMultiCheckObjs.isSameSize()) {
             $("#txtMultiSizeWidth").val(currentMultiCheckObjs[0].size.width);
@@ -145,6 +165,18 @@ function showMultiEditBar(currentMultiCheckObjs) {
         else {
             $("#txtMultiDisplayName").val("");
         }
+
+        if (currentMultiCheckObjs.isSameAngle()) {
+            var angleVal = (currentMultiCheckObjs[0]._revolveAngle * 360) / (2 * Math.PI);
+            if (angleVal < 0) {
+                angleVal = 360 + angleVal;
+            }
+            $("#txtMultiAngle").val(angleVal);
+        }
+        else {
+            $("#txtMultiAngle").val("0");
+        }
+
 
 
 
@@ -167,7 +199,7 @@ function effectMultiEdit(currentMultiCheckObjs) {
 
         var displayName = $("#txtMultiDisplayName").val();
 
-
+        var angle= new Number($("#txtMultiAngle").val());
 
 
         for (var i = 0; i < currentMultiCheckObjs.length; i++) {
@@ -179,6 +211,16 @@ function effectMultiEdit(currentMultiCheckObjs) {
 
             if (displayName.trim() != "") {
                 obj.displayName = displayName;
+            }
+
+            if (angle >= 0 && angle <= 270) {
+                obj._revolveAngle = angle * Math.PI / 180;
+            }
+            else {
+                if (angle > 270 && angle <= 360) {
+                    var  saveAngle = -(360 - angle)
+                    obj._revolveAngle = saveAngle * Math.PI / 180;
+                }
             }
         }
         
@@ -545,6 +587,7 @@ function showCursor(ev)
                         case ChairTool.name:
                         case DeskTool.name:
                         case ShowAndHideTool.name:
+                        case RevolveCircle.name:
                             canvas.style.cursor = "pointer";
                             break;
                         case ResizeRectangle.name:
@@ -650,28 +693,19 @@ function fGetCirclleCutPointBySinValue(circleCenterPoint, sinValue, circleRadius
 
     var x2= 0, y2 = 0;
 
-
     if (sinValue >= Math.PI / 2 && sinValue <= 3 *2* Math.PI / 4) {//左半圆
         // angle = Math.acos((cutPoint.y - centerPoint.y) / radius)+Math.PI/2;
-        y2 = (sinValue - Math.PI / 2) * circleRadius + y1;
-        /*if (y2 >= y1 + circleRadius) {
-            x2 = x1;
-        }
-        else {*/
-            x2 = x1 - Math.sqrt(Math.pow(circleRadius, 2) - Math.pow(Math.abs((y2 - y1)), 2));
-        //}
+        //Math.cos(angle)=(y2-y1)/radius
+        y2 = Math.cos(sinValue - Math.PI / 2) * circleRadius + y1;
+        x2 = x1 - Math.sqrt(Math.pow(circleRadius, 2) - Math.pow(Math.abs((y2 - y1)), 2));
+      
         
     }
     else {//右半圆
         //angle = Math.asin((cutPoint.y - centerPoint.y) / radius);
-        y2 = sinValue * circleRadius + y1;
+        y2 = Math.sin(sinValue) * circleRadius + y1;
         x2 = Math.sqrt(Math.pow(circleRadius, 2) - Math.pow((y2 - y1), 2)) + x1
     }
-    //(y2 - y1) /circleRadius =sinValue;
-    //y2 = sinValue * circleRadius + y1;
-
-    //Math.sqrt(Math.pow(circleRadius,2)-Math.pow((y2 - y1), 2))= x2-x1
-    // x2=Math.sqrt(Math.pow(circleRadius, 2) - Math.pow((y2 - y1), 2)) + x1
 
     return new Position(x2, y2);
 }

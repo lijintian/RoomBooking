@@ -259,7 +259,7 @@ function moveUnit(xUnit, yUnit) {
 
 function equalObj(obj) {
     if (this.position.x == obj.position.x && this.position.y == obj.position.y
-   && this.size.width.valueOf() == obj.size.width.valueOf() && this.size.height.valueOf() == obj.size.height.valueOf()
+   && this.size.width.valueOf() == obj.size.width.valueOf() && this.size.height.valueOf() == obj.size.height.valueOf() && this._revolveAngle==obj._revolveAngle
    ) {
         return true;
     }

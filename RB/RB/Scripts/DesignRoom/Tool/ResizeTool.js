@@ -82,12 +82,13 @@ function ResizeTool(position, size, displayName) {
     this.addResizeRectangle(resizeRetangle7);
 
     //旋转按钮
-    var pathCircleRadius = this.size.width > this.size.height ? this.size.width : this.size.height;
+   
     var size8 = new Size(20, 20);
+    var pathCircleRadius = Math.sqrt(Math.pow(this.size.width / 2, 2) + Math.pow(this.size.height / 2, 2))+size8.width;
     var position8 = new Position(this.position.x + this.size.width / 2 + pathCircleRadius - size8.width / 2, this.position.y + this.size.height / 2 - size8.height / 2, 1001);
     
-    this.getAllReferanceObjs();
-    if(this.allReferanceObjs.length==1)
+  
+    if (this.allReferanceObjs.length>0&& this.allReferanceObjs.isSameAngle())
     {
         var circleCenterPosition = new Position(this.position.x + this.size.width / 2, this.position.y + this.size.height / 2);
         var sinValue = this.allReferanceObjs[0]._revolveAngle;
@@ -159,11 +160,11 @@ function moveResizeRetangle() {
     var position7 = new Position(this.position.x - retangleRadius, this.position.y + this.size.height / 2 - retangleRadius, 1001);
     this.resizeRectangles[7].position = position7;
 
-    var pathCircleRadius = this.size.width > this.size.height ? this.size.width : this.size.height;
     var size8 = new Size(20, 20);
+    var pathCircleRadius = Math.sqrt(Math.pow(this.size.width / 2, 2) + Math.pow(this.size.height / 2, 2)) + size8.width;
     var position8 = new Position(this.position.x + this.size.width / 2 + pathCircleRadius - size8.width / 2, this.position.y + this.size.height / 2 - size8.height / 2, 1001);
     this.getAllReferanceObjs();
-    if (this.allReferanceObjs.length == 1) {
+    if (this.allReferanceObjs.length > 0 && this.allReferanceObjs.isSameAngle()) {
         var circleCenterPosition = new Position(this.position.x + this.size.width / 2, this.position.y + this.size.height / 2);
         var sinValue = this.allReferanceObjs[0]._revolveAngle;
         var cutPoint = fGetCirclleCutPointBySinValue(circleCenterPosition, sinValue, pathCircleRadius);
@@ -533,6 +534,8 @@ function onRevolveCircleMouseMove(ev) {
 
         this.moveTo(cutPoint.x - this._circleRadius, cutPoint.y - this._circleRadius);
         this.refreshResizeToolReferenceObjsAngle(centerPoint, cutPoint, this._pathCircleRadius);
+
+        ResizeTool.unique.showReferenceObjsProperty();
     }
     else {
 

@@ -32,6 +32,39 @@ Array.prototype.show = fArrayShow;
 Array.prototype.hide = fArrayHide;
 Array.prototype.newId = fArrayNewId;
 Array.prototype.setAngle = fArraySetAngle;
+Array.prototype.isSameAngle = fArrayIsSameAngle;
+Array.prototype.isSammeProperty = fArrayIsSameProperty;
+
+
+/**
+
+*/
+function fArrayIsSameProperty(propertyName)
+{
+    var isSame = true;
+
+    if (this.length > 0) {
+        var firstValue = this[0][propertyName];
+
+        for (var i = 1; i < this.length ; i++) {
+            var currentValue = this[i][propertyName];
+
+            if (firstValue != currentValue) {
+                isSame = false;
+                break;
+            }
+        }
+    }
+    return isSame;
+}
+
+/**
+@method 判断数组元素的Angle是否都一样
+*/
+function fArrayIsSameAngle() {
+    return this.isSammeProperty("_revolveAngle");
+}
+
 
 function fArraySetAngle(angle)
 {
@@ -77,7 +110,7 @@ function arrayGetRelativeDistances(mousePosition)
 }
 
 /*
-@method 判断两个数组是否相同(position,size相同及认为相同)
+@method 判断两个数组是否相同(position,size,_resolveAngle相同及认为相同)
 */
 function arrayEqual(arr) {
     if (this.length == arr.length) {
