@@ -25,7 +25,7 @@
 * drag and resize the all the choosed objects 
  * (拖动ReSize工具改变所有被选中对象的大小)
 
-## Room Design Tool New Feature
+## Support copy paste and calculate the count 
 ![MultiOp](https://github.com/lijintian/RoomBooking/blob/master/RB/RB/Source/Introduce/Copy.gif)
 * support copy and paste
  * (支持复制粘贴)
@@ -35,5 +35,5 @@
 ## Room Design Tool New Feature
 ![MultiOp](https://github.com/lijintian/RoomBooking/blob/master/RB/RB/Source/Introduce/Revolve.gif)
 * support object revolve
- * (支持对象选中)
+ * (支持对象旋转)
 
