@@ -31,3 +31,9 @@
  * (支持复制粘贴)
 * support calculate equipments count
  * (支持计算设备数量)
+
+## Room Design Tool New Feature
+![MultiOp](https://github.com/lijintian/RoomBooking/blob/master/RB/RB/Source/Introduce/Revolve.gif)
+* support object revolve
+ * (支持对象选中)
+
